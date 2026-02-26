@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 10: La División - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 60px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        /* Division Diagram */
+        .div-container {
+            position: relative;
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divisor {
+            color: var(--primary-blue);
+            margin-right: 15px;
+            position: relative;
+        }
+
+        .box-container {
+            border-left: 4px solid #333;
+            border-top: 4px solid #333;
+            padding: 10px 20px;
+            position: relative;
+        }
+
+        .dividend {
+            color: var(--secondary-green);
+        }
+
+        .quotient {
+            color: var(--primary-red);
+            position: absolute;
+            top: -60px;
+            left: 20px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .residue {
+            color: var(--primary-blue);
+            position: absolute;
+            bottom: -60px;
+            left: 20px;
+            font-size: 2.5rem;
+        }
+
+        .label-arrow {
+            position: absolute;
+            font-size: 0.9rem;
+            font-weight: bold;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 10px 30px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            margin: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .parts-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .parts-list li {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .property-card {
+            background: #f8fafc;
+            border: 2px solid #cbd5e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            width: 250px;
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+            transition: 0.3s;
+        }
+
+        .property-card:hover {
+            border-color: var(--primary-orange);
+            transform: translateY(-5px);
+        }
+
+        .property-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--primary-blue-dark);
+        }
+
+        .div-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 50px);
+            grid-template-rows: repeat(4, 50px);
+            gap: 0;
+            background: white;
+            border: 1px solid #cbd5e0;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .div-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .div-cell.empty {
+            background: #f8fafc;
+        }
+
+        .div-casita-top {
+            border-top: 4px solid #333 !important;
+        }
+
+        .div-casita-left {
+            border-left: 4px solid #333 !important;
+        }
+
+        .div-casita-line {
+            border-top: 2px solid #333 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 10: La División</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">➗ 🧩</div>
+                    <h1>El Arte de Repartir</h1>
+                    <h2>Partes y Propiedades de la División</h2>
+                    <p>Hoy aprenderemos cómo se llama cada parte de la división y las reglas mágicas que siempre se
+                        cumplen cuando repartimos en partes iguales.</p>
+                    <button class="btn-action" onclick="nextS()">¡Comenzar! 🚀</button>
+                </div>
+
+                <!-- 2. Definiciones -->
+                <div class="slide">
+                    <h2>¿Qué es la División?</h2>
+                    <p>Es la operación que nos permite repartir una cantidad en partes iguales.</p>
+                    <ul class="parts-list">
+                        <li>
+                            <div class="dot" style="background: var(--secondary-green);"></div>
+                            <strong>Dividendo:</strong> Es la cantidad que hay que dividir o repartir.
+                        </li>
+                        <li>
+                            <div class="dot" style="background: var(--primary-blue);"></div> <strong>Divisor:</strong>
+                            Es el número por el que vas a dividir.
+                        </li>
+                        <li>
+                            <div class="dot" style="background: var(--primary-red);"></div> <strong>Cociente:</strong>
+                            Es el resultado.
+                        </li>
+                        <li>
+                            <div class="dot" style="background: var(--primary-blue-dark);"></div>
+                            <strong>Residuo:</strong> La cantidad que sobra.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 3. Diagrama Visual -->
+                <div class="slide">
+                    <h2>El Mapa de la División</h2>
+                    <p>Mira dónde vive cada número en la "casa" de la división.</p>
+
+                    <div class="div-container">
+                        <div class="divisor" id="d-label">9
+                            <div class="label-arrow" style="right: 110%; top: 50%; transform: translateY(-50%);">divisor
+                                <span style="font-size: 1.5rem;">→</span>
+                            </div>
+                        </div>
+                        <div class="box-container">
+                            <div class="quotient" id="q-label">9
+                                <div class="label-arrow" style="left: 110%; top: 0;"> <span
+                                        style="font-size: 1.5rem;">←</span> cociente</div>
+                            </div>
+                            <div class="dividend" id="dd-label">81
+                                <div class="label-arrow" style="left: 110%; top: 50%; transform: translateY(-50%);">
+                                    <span style="font-size: 1.5rem;">←</span> dividendo
+                                </div>
+                            </div>
+                            <div class="residue" id="r-label">0
+                                <div class="label-arrow" style="right: 110%; top: 50%; transform: translateY(-50%);">
+                                    residuo <span style="font-size: 1.5rem;">→</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Propiedades 1 -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">⭐</div>
+                    <h2>Propiedades de la División</h2>
+                    <p>Reglas de oro que nunca cambian:</p>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                        <div class="property-card">
+                            <h3>Regla #1</h3>
+                            <p>El residuo <strong>siempre</strong> es más pequeño que el divisor.</p>
+                            <div
+                                style="font-weight: bold; color: var(--primary-red); text-align: center; font-size: 1.5rem; margin-top: 10px;">
+                                r < d</div>
+                            </div>
+                            <div class="property-card">
+                                <h3>Regla #2</h3>
+                                <p>El residuo mínimo que puede existir es <strong>uno</strong> (si no es exacta).</p>
+                            </div>
+                            <div class="property-card">
+                                <h3>Regla #3</h3>
+                                <p>El residuo máximo es igual al divisor menos uno.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Simulador de la Casita -->
+                    <div class="slide">
+                        <h2>Simulador de la Casita</h2>
+                        <p>Vamos a dividir <strong>25 entre 4</strong> paso a paso. ¡Mira cómo resolvemos el misterio!
+                        </p>
+
+                        <div id="div-sim-explanation"
+                            style="min-height: 70px; background: #fffaf0; padding: 15px; border-radius: 10px; border: 1px solid #feebc8; margin-bottom: 20px; font-weight: 500; color: var(--primary-blue-dark);">
+                            Paso 1: ¿Cuántas veces cabe el 4 en el 25? Buscamos en la tabla del 4...
+                        </div>
+
+                        <!-- Grid de División -->
+                        <div class="div-grid">
+                            <!-- Fila 1: Cociente -->
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell" id="sim-grid-q"
+                                style="visibility: hidden; color: var(--primary-red);">6</div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell empty"></div>
+
+                            <!-- Fila 2: Divisor y Dividendo -->
+                            <div class="div-cell" style="color: var(--primary-blue-dark);">4</div>
+                            <div class="div-cell div-casita-left div-casita-top empty"></div>
+                            <div class="div-cell div-casita-top" style="color: var(--secondary-green);">2</div>
+                            <div class="div-cell div-casita-top" style="color: var(--secondary-green);">5</div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell empty"></div>
+
+                            <!-- Fila 3: Subtramado -->
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell div-casita-left empty"></div>
+                            <div class="div-cell" id="sim-grid-sub1" style="visibility: hidden; color: #a0aec0;">2</div>
+                            <div class="div-cell" id="sim-grid-sub2" style="visibility: hidden; color: #a0aec0;">4</div>
+                            <div class="div-cell" id="sim-grid-minus"
+                                style="visibility: hidden; color: #a0aec0; font-size: 1.2rem;">-</div>
+                            <div class="div-cell empty"></div>
+
+                            <!-- Fila 4: Residuo -->
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell div-casita-left empty"></div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell div-casita-line" id="sim-grid-r"
+                                style="visibility: hidden; color: var(--primary-blue-dark);">1</div>
+                            <div class="div-cell empty"></div>
+                            <div class="div-cell empty"></div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button class="btn-action" id="btn-div-step" onclick="nextDivStep()">Siguiente Paso
+                                ⏩</button>
+                            <button class="btn-action" onclick="resetDivSim()">Reiniciar</button>
+                        </div>
+                    </div>
+
+                    <!-- 6. Interactive Challenge -->
+                    <div class="slide">
+                        <h2>¡Reto de Detective!</h2>
+                        <p>Si divido 10 entre 3, el cociente es 3 y sobra 1. ¿Cómo se llama ese 1?</p>
+                        <div style="width: 100%; max-width: 500px;">
+                            <button class="btn-action" style="width: 100%; margin: 5px;"
+                                onclick="checkDiv(false, this)">Dividendo</button>
+                            <button class="btn-action" style="width: 100%; margin: 5px;"
+                                onclick="checkDiv(false, this)">Cociente</button>
+                            <button class="btn-action" style="width: 100%; margin: 5px;"
+                                onclick="checkDiv(true, this)">Residuo</button>
+                        </div>
+                        <div id="div-feed" style="margin-top: 20px; font-weight: bold;"></div>
+                    </div>
+
+                    <!-- 6. Cierre -->
+                    <div class="slide">
+                        <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🎓</div>
+                        <h1>¡Maestro repartidor!</h1>
+                        <p>Ahora conoces las partes y los secretos de la división. ¡Sigue practicando para ser el mejor!
+                        </p>
+                        <button class="btn-action" onclick="goTo(0)">Reiniciar Lección</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+            <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+            <div class="slide-num" id="s-num">1 / 6</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="p-bar"></div>
+            </div>
+        </div>
+
+        <script>
+            let cur = 0;
+            const slides = document.querySelectorAll('.slide');
+            const cont = document.getElementById('container');
+            const prevB = document.getElementById('prev-btn');
+            const nextB = document.getElementById('next-btn');
+            const sNum = document.getElementById('s-num');
+            const pBar = document.getElementById('p-bar');
+
+            // Division Simulator Logic
+            let divStep = 0;
+            function nextDivStep() {
+                const exp = document.getElementById('div-sim-explanation');
+                const btn = document.getElementById('btn-div-step');
+                divStep++;
+
+                if (divStep === 1) {
+                    exp.innerText = "Paso 2: 4 x 6 = 24. El 6 es nuestro cociente y lo ponemos arriba de la casita.";
+                    document.getElementById('sim-grid-q').style.visibility = "visible";
+                } else if (divStep === 2) {
+                    exp.innerText = "Paso 3: Ahora restamos 25 - 24 para ver cuánto nos sobra.";
+                    document.getElementById('sim-grid-sub1').style.visibility = "visible";
+                    document.getElementById('sim-grid-sub2').style.visibility = "visible";
+                    document.getElementById('sim-grid-minus').style.visibility = "visible";
+                } else if (divStep === 3) {
+                    exp.innerText = "Paso 4: ¡Listo! El resultado de la resta es 1. Ese es nuestro RESIDUO.";
+                    document.getElementById('sim-grid-r').style.visibility = "visible";
+                    btn.style.display = "none";
+                }
+            }
+
+            function resetDivSim() {
+                divStep = 0;
+                document.getElementById('div-sim-explanation').innerText = "Paso 1: ¿Cuántas veces cabe el 4 en el 25? Buscamos en la tabla del 4...";
+                const ids = ['sim-grid-q', 'sim-grid-sub1', 'sim-grid-sub2', 'sim-grid-minus', 'sim-grid-r'];
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.visibility = "hidden";
+                });
+                document.getElementById('btn-div-step').style.display = "inline-block";
+            }
+
+            function upG() {
+                cont.style.transform = `translateX(-${cur * 100}%)`;
+                prevB.style.display = cur === 0 ? 'none' : 'flex';
+                nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+                sNum.innerText = `${cur + 1} / ${slides.length}`;
+                pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+
+                // If we leave the simulator slide, reset it
+                if (cur !== 4) resetDivSim();
+            }
+
+            function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+            function prevS() { if (cur > 0) { cur--; upG(); } }
+            function goTo(n) { cur = n; upG(); }
+
+            function checkDiv(correct, btn) {
+                const feed = document.getElementById('div-feed');
+                if (correct) {
+                    btn.style.background = "#f0fff4";
+                    btn.style.borderColor = "var(--secondary-green)";
+                    feed.innerText = "¡Correcto! El residuo es lo que sobra.";
+                    feed.style.color = "var(--secondary-green)";
+                } else {
+                    btn.style.background = "#fff5f5";
+                    btn.style.borderColor = "var(--primary-red)";
+                    feed.innerText = "Casi... Piénsalo bien, ¿qué es lo que sobra?";
+                    feed.style.color = "var(--primary-red)";
+                }
+            }
+
+            // Init call
+            upG();
+        </script>
+</body>
+
+</html>

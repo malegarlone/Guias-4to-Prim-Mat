@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 6: Sistema de numeración y Orden - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            max-width: 750px;
+            margin-bottom: 1.2rem;
+            color: #4a5568;
+        }
+
+        /* Place Value Houses */
+        .neighborhood {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-end;
+            margin: 20px 0;
+        }
+
+        .house-block {
+            border: 3px solid var(--primary-blue-dark);
+            border-radius: 15px;
+            padding: 10px;
+            background: #fdfdfd;
+            position: relative;
+        }
+
+        .house-title {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-orange);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .positions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pos-box {
+            width: 45px;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .pos-digit {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-family: 'Outfit';
+        }
+
+        .pos-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #718096;
+        }
+
+        /* Ordinal Race */
+        .race-track {
+            width: 100%;
+            background: #2d3748;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px;
+            margin: 15px 0;
+            border: 4px solid #4a5568;
+        }
+
+        .lane {
+            height: 30px;
+            border-bottom: 1px dashed white;
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+        }
+
+        .car {
+            font-size: 1.8rem;
+            position: absolute;
+            left: 0;
+            transition: left 1s;
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 10px 30px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2d3748;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #fff;
+            border-color: var(--primary-orange);
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 6: Sistema de Numeración y Orden</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🏡 🏁</div>
+                    <h1>El Valor de los Números</h1>
+                    <h2>De Unidades a Millones y su Orden</h2>
+                    <p>Hoy aprenderemos cómo el lugar donde vive un número cambia su valor y cómo usarlos para ganar
+                        carreras.</p>
+                    <button class="btn-action" onclick="nextS()">¡Empezar Viaje! 🚀</button>
+                </div>
+
+                <!-- 2. Sistema Posicional - Las Casas -->
+                <div class="slide">
+                    <h2>Un Sistema Posicional</h2>
+                    <p>En nuestro sistema, el valor de un dígito depende de su <strong>posición</strong>. Imagina que
+                        los números viven en diferentes barrios o casas.</p>
+                    <div class="neighborhood">
+                        <div class="house-block">
+                            <div class="house-title">Millones</div>
+                            <div class="positions">
+                                <div class="pos-box">
+                                    <div class="pos-digit">3</div>
+                                    <div class="pos-label">UMi</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="house-block">
+                            <div class="house-title">Mil</div>
+                            <div class="positions">
+                                <div class="pos-box">
+                                    <div class="pos-digit">4</div>
+                                    <div class="pos-label">CM</div>
+                                </div>
+                                <div class="pos-box">
+                                    <div class="pos-digit">5</div>
+                                    <div class="pos-label">DM</div>
+                                </div>
+                                <div class="pos-box">
+                                    <div class="pos-digit">2</div>
+                                    <div class="pos-label">UM</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="house-block">
+                            <div class="house-title">Unidades</div>
+                            <div class="positions">
+                                <div class="pos-box">
+                                    <div class="pos-digit">1</div>
+                                    <div class="pos-label">C</div>
+                                </div>
+                                <div class="pos-box">
+                                    <div class="pos-digit">8</div>
+                                    <div class="pos-label">D</div>
+                                </div>
+                                <div class="pos-box">
+                                    <div class="pos-digit">9</div>
+                                    <div class="pos-label">U</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Este número es: 3,452,189</p>
+                </div>
+
+                <!-- 3. Cómo leer números grandes -->
+                <div class="slide">
+                    <h2>¿Cómo se lee?</h2>
+                    <p>Para leer, agrupamos en casas de tres. Al cruzar de una casa a otra, decimos el nombre del
+                        barrio.</p>
+                    <div
+                        style="display: flex; gap: 15px; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; font-family: 'Outfit'; color: var(--primary-blue-dark); background: #fdf2f2; padding: 20px; border-radius: 15px;">
+                        <span>24</span> <span style="color: var(--primary-orange);">millones</span>
+                        <span>500</span> <span style="color: var(--primary-orange);">mil</span>
+                        <span>320</span>
+                    </div>
+                    <p style="margin-top: 15px;">¡Veinticuatro millones, quinientos mil, trescientos veinte!</p>
+                </div>
+
+                <!-- 4. Cardinales vs Ordinales -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🏷️</div>
+                    <h2>¿Contar o Ordenar?</h2>
+                    <p>Cuando decimos cuántas cosas hay (1, 2, 3), usamos números <strong>Cardinales</strong>. Cuando
+                        decimos en qué lugar están, usamos números <strong>Ordinales</strong>.</p>
+                    <div style="display: flex; gap: 30px; justify-content: center; margin: 20px 0;">
+                        <div
+                            style="background: #ebf8ff; padding: 20px; border-radius: 15px; border: 2px solid #bee3f8;">
+                            <div style="font-size: 2rem;">5</div>
+                            <div style="font-weight: bold; color: var(--primary-blue-dark);">Cardinal</div>
+                            <div style="font-size: 0.8rem;">(Hay 5 carros)</div>
+                        </div>
+                        <div
+                            style="background: #fffaf0; padding: 20px; border-radius: 15px; border: 2px solid #feebc8;">
+                            <div style="font-size: 2rem; color: var(--primary-orange);">5º</div>
+                            <div style="font-weight: bold; color: var(--primary-orange);">Ordinal</div>
+                            <div style="font-size: 0.8rem;">(Llegó en 5º lugar)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. La Gran Carrera -->
+                <div class="slide">
+                    <h2>¡Míralos en acción!</h2>
+                    <p>Haz clic en los carros para ver su posición ordinal según el número que tienen.</p>
+                    <div class="race-track" id="track">
+                        <div class="lane">
+                            <div class="car" id="car1" onclick="moveCar(1, 100)">🏎️ <span
+                                    style="font-size: 0.8rem; background: white; padding: 2px; border-radius: 5px;">1</span>
+                            </div>
+                        </div>
+                        <div class="lane">
+                            <div class="car" id="car2" onclick="moveCar(2, 250)">🏎️ <span
+                                    style="font-size: 0.8rem; background: white; padding: 2px; border-radius: 5px;">2</span>
+                            </div>
+                        </div>
+                        <div class="lane">
+                            <div class="car" id="car3" onclick="moveCar(3, 400)">🏎️ <span
+                                    style="font-size: 0.8rem; background: white; padding: 2px; border-radius: 5px;">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="car-info"
+                        style="min-height: 30px; font-weight: bold; color: var(--primary-blue-dark); font-size: 1.2rem;">
+                        Haz clic en un carro</div>
+                    <button class="btn-action" style="margin-top: 10px;" onclick="resetRace()">Reiniciar
+                        Carrera</button>
+                </div>
+
+                <!-- 6. Reto de Posición -->
+                <div class="slide">
+                    <h2>Reto de Maestro</h2>
+                    <p>Si el número es <strong>5,000,000</strong>, ¿en qué casa vive el 5?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">A) Casa de las Unidades</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">B) Casa de los Miles</button>
+                        <button class="quiz-option" onclick="checkQ(1, true, this)">C) Casa de los Millones</button>
+                    </div>
+                    <div id="feed-q1" style="font-weight: bold; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 7. Reto Ordinal -->
+                <div class="slide">
+                    <h2>Reto Ordinal</h2>
+                    <p>¿Cómo se dice si alguien llega en la posición número 100?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(2, true, this)">A) Centésimo</button>
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">B) Cienavo</button>
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">C) Milésimo</button>
+                    </div>
+                    <div id="feed-q2" style="font-weight: bold; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 8. Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🏆</div>
+                    <h1>¡Eres un Experto!</h1>
+                    <p>Ahora sabes cómo leer números gigantes y cómo usarlos para dar orden a todo lo que ves. ¡Sigue
+                        practicando!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Aventura</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 8</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.style.display = cur === 0 ? 'none' : 'flex';
+            nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        function moveCar(id, pos) {
+            const car = document.getElementById(`car${id}`);
+            const info = document.getElementById('car-info');
+            const ords = ["", "Primero", "Segundo", "Tercero"];
+            car.style.left = `${pos}px`;
+            info.innerText = `¡El carro ${id} va en ${id}º lugar (${ords[id]})!`;
+        }
+
+        function resetRace() {
+            for (let i = 1; i <= 3; i++) document.getElementById(`car${i}`).style.left = '0';
+            document.getElementById('car-info').innerText = "Haz clic en un carro";
+        }
+
+        function checkQ(id, correct, btn) {
+            const feed = document.getElementById(`feed-q${id}`);
+            if (correct) {
+                btn.style.background = "#f0fff4";
+                btn.style.borderColor = "var(--secondary-green)";
+                feed.innerText = id === 1 ? "¡Excelente! El 5 ocupa el lugar de los millones." : "¡Exacto! El 100º es el centésimo.";
+                feed.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fff5f5";
+                btn.style.borderColor = "var(--primary-red)";
+                feed.innerText = "¡Casi! Inténtalo de nuevo.";
+                feed.style.color = "var(--primary-red)";
+            }
+        }
+    </script>
+</body>
+
+</html>

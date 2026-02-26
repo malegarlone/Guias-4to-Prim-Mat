@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 9: Multiplicación y Potencias - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 60px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        /* Grid for Multiplication */
+        .mult-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(7, 42px);
+            gap: 2px;
+            background: #cbd5e0;
+            padding: 2px;
+            border: 2px solid var(--primary-blue-dark);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .grid-cell {
+            background: white;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .grid-cell.empty {
+            background: #f8fafc;
+        }
+
+        .grid-cell.op {
+            background: #edf2f7;
+            font-weight: bold;
+        }
+
+        .grid-cell.label-cell {
+            background: #fffaf0;
+            font-size: 0.6rem;
+            color: var(--primary-blue-dark);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .grid-cell.saltito {
+            color: #d53f8c;
+            font-weight: bold;
+            background: #fff5f7;
+        }
+
+        /* Power Visualizer */
+        .power-card {
+            background: #f8fafc;
+            border: 3px solid var(--primary-blue-dark);
+            border-radius: 20px;
+            padding: 40px 60px;
+            display: inline-block;
+            position: relative;
+            margin: 20px;
+        }
+
+        .base {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-family: 'Outfit';
+        }
+
+        .exponent {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-orange);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-family: 'Outfit';
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 10px 30px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            margin: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2d3748;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #fff;
+            border-color: var(--primary-orange);
+            transform: translateX(5px);
+        }
+
+        .label-box {
+            position: absolute;
+            right: -120px;
+            width: 100px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--primary-blue-dark);
+            font-weight: bold;
+            border-left: 2px solid #cbd5e0;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 9: Multiplicación y Potencias</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">✖️ ⚡</div>
+                    <h1>Misión Multiplicar</h1>
+                    <h2>Alineación, Pasos y Potencias</h2>
+                    <p>Hoy seremos detectives de los grandes números. Aprenderemos las partes de la multiplicación y el
+                        truco de la escalerita para multiplicar 3 cifras.</p>
+                    <button class="btn-action" onclick="nextS()">¡Comenzar! 🚀</button>
+                </div>
+
+                <!-- 2. Partes de la Multiplicación -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">📋</div>
+                    <h2>¿Quién es quién?</h2>
+                    <p>Los números que multiplicamos se llaman <strong>FACTORES</strong>, y el resultado es el
+                        <strong>PRODUCTO</strong>.
+                    </p>
+
+                    <div class="mult-grid" style="grid-template-columns: repeat(5, 50px);">
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell">7</div>
+                        <div class="grid-cell">8</div>
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell op">x</div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell">9</div>
+                        <div class="grid-cell">5</div>
+                        <div class="grid-cell empty"
+                            style="grid-column: span 5; height: 4px; background: #333; padding: 0;"></div>
+                        <div class="grid-cell">7</div>
+                        <div class="grid-cell">4</div>
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell">9</div>
+                        <div class="grid-cell">5</div>
+
+                        <!-- Labels -->
+                        <div
+                            style="position: absolute; right: -130px; top: 10px; text-align: left; font-size: 0.8rem; font-weight: bold; color: var(--primary-blue-dark);">
+                            ← MULTIPLICANDO
+                        </div>
+                        <div
+                            style="position: absolute; right: -130px; top: 60px; text-align: left; font-size: 0.8rem; font-weight: bold; color: var(--primary-blue-dark);">
+                            ← MULTIPLICADOR
+                        </div>
+                        <div
+                            style="position: absolute; right: -130px; top: 110px; text-align: left; font-size: 0.8rem; font-weight: bold; color: var(--primary-orange);">
+                            ← PRODUCTO
+                        </div>
+                        <div
+                            style="position: absolute; left: -110px; top: 35px; text-align: right; font-size: 0.8rem; font-weight: bold; color: #718096;">
+                            FACTORES {
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Simulador de la Escalerita (3 cifras) -->
+                <div class="slide">
+                    <h2>Multiplicación de 3 Cifras</h2>
+                    <p>Vamos a multiplicar <strong>367 x 251</strong> paso a paso. ¡Usa tu cuaderno de cuadrículas!</p>
+
+                    <div id="mult-explanation"
+                        style="min-height: 70px; background: #fffaf0; padding: 15px; border-radius: 10px; border: 1px solid #feebc8; margin-bottom: 20px; font-weight: 500; color: var(--primary-blue-dark);">
+                        Paso 1: Empezamos por las unidades del multiplicador: 1 x 367.
+                    </div>
+
+                    <div class="mult-grid" id="sim-grid">
+                        <!-- Factors -->
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell">3</div>
+                        <div class="grid-cell">6</div>
+                        <div class="grid-cell">7</div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell op">x</div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell">2</div>
+                        <div class="grid-cell">5</div>
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"
+                            style="grid-column: span 7; height: 2px; background: #333; padding: 0;"></div>
+
+                        <!-- Row 1 (Units) -->
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell" id="r1-1" style="visibility: hidden;">3</div>
+                        <div class="grid-cell" id="r1-2" style="visibility: hidden;">6</div>
+                        <div class="grid-cell" id="r1-3" style="visibility: hidden;">7</div>
+                        <div class="grid-cell empty"></div>
+
+                        <!-- Row 2 (Tens) -->
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell" id="r2-1" style="visibility: hidden;">1</div>
+                        <div class="grid-cell" id="r2-2" style="visibility: hidden;">8</div>
+                        <div class="grid-cell" id="r2-3" style="visibility: hidden;">3</div>
+                        <div class="grid-cell" id="r2-4" style="visibility: hidden;">5</div>
+                        <div class="grid-cell saltito" id="r2-s1" style="visibility: hidden;">X</div>
+                        <div class="grid-cell empty"></div>
+
+                        <!-- Row 3 (Hundreds) -->
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell" id="r3-1" style="visibility: hidden;">7</div>
+                        <div class="grid-cell" id="r3-2" style="visibility: hidden;">3</div>
+                        <div class="grid-cell" id="r3-3" style="visibility: hidden;">4</div>
+                        <div class="grid-cell saltito" id="r3-s1" style="visibility: hidden;">X</div>
+                        <div class="grid-cell saltito" id="r3-s2" style="visibility: hidden;">X</div>
+                        <div class="grid-cell empty"></div>
+
+                        <!-- Final Result -->
+                        <div class="grid-cell empty"
+                            style="grid-column: span 7; height: 2px; background: var(--primary-orange); visibility: hidden;"
+                            id="final-line"></div>
+                        <div class="grid-cell empty"></div>
+                        <div class="grid-cell" id="f-1" style="visibility: hidden; color: var(--primary-orange);">9
+                        </div>
+                        <div class="grid-cell" id="f-2" style="visibility: hidden; color: var(--primary-orange);">2
+                        </div>
+                        <div class="grid-cell" id="f-3" style="visibility: hidden; color: var(--primary-orange);">1
+                        </div>
+                        <div class="grid-cell" id="f-4" style="visibility: hidden; color: var(--primary-orange);">1
+                        </div>
+                        <div class="grid-cell" id="f-5" style="visibility: hidden; color: var(--primary-orange);">7
+                        </div>
+                        <div class="grid-cell empty"></div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn-action" id="btn-mult-step" onclick="nextMultStep()">Siguiente Paso ⏩</button>
+                        <button class="btn-action" onclick="resetSteps()">Reiniciar</button>
+                    </div>
+                </div>
+
+                <!-- 4. Potencias Intro -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🧬</div>
+                    <h2>¿Qué es una Potencia?</h2>
+                    <p>Una potencia es una forma corta de escribir una multiplicación del mismo número varias veces.</p>
+                    <div class="power-card">
+                        <span class="base" id="base-v">5</span>
+                        <span class="exponent" id="exp-v">2</span>
+                    </div>
+                    <p style="margin-top: 20px; font-weight: bold; color: var(--primary-blue-dark);" id="power-desc">
+                        5 elevado a la 2 significa: 5 x 5 = 25
+                    </p>
+                </div>
+
+                <!-- 5. Explorador de Potencias -->
+                <div class="slide">
+                    <h2>Explorador de Superpoderes</h2>
+                    <p>Cambia el exponente para ver cómo el número se multiplica a sí mismo.</p>
+                    <div style="display: flex; gap: 20px; align-items: center; margin: 20px 0;">
+                        <div class="power-card">
+                            <span class="base">2</span>
+                            <span class="exponent" id="dyn-exp">3</span>
+                        </div>
+                        <div style="font-size: 2rem; color: var(--primary-blue-dark); font-weight: bold;">=</div>
+                        <div style="font-size: 1.5rem; color: var(--primary-orange); font-family: 'Outfit';"
+                            id="dyn-result">
+                            2 x 2 x 2 = 8
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn-action" onclick="changeExp(2)">2² (Cuadrado)</button>
+                        <button class="btn-action" onclick="changeExp(3)">2³ (Cubo)</button>
+                        <button class="btn-action" onclick="changeExp(4)">2⁴ (A la cuarta)</button>
+                    </div>
+                </div>
+
+                <!-- 6. Reto de Conceptos -->
+                <div class="slide">
+                    <h2>Reto de Sabiduría</h2>
+                    <p>En una multiplicación, ¿cómo llamamos al resultado final?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(false, this)">A) Factor</button>
+                        <button class="quiz-option" onclick="checkQ(true, this)">B) Producto</button>
+                        <button class="quiz-option" onclick="checkQ(false, this)">C) Residuo</button>
+                    </div>
+                    <div id="quiz-feed" style="font-weight: bold; margin-top: 15px;"></div>
+                </div>
+
+                <!-- 7. Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🎖️</div>
+                    <h1>¡Multi-Genio de 3 Cifras!</h1>
+                    <p>Has dominado el arte de la escalerita y los secretos de las potencias. ¡Eres increíble!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Lección</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 7</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.style.display = cur === 0 ? 'none' : 'flex';
+            nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        let multStep = 0;
+        function nextMultStep() {
+            const exp = document.getElementById('mult-explanation');
+            const btn = document.getElementById('btn-mult-step');
+
+            multStep++;
+
+            if (multStep === 1) {
+                exp.innerText = "Paso 2: 1 x 367 = 367. Escribimos el resultado en la primera fila.";
+                document.getElementById('r1-1').style.visibility = "visible";
+                document.getElementById('r1-2').style.visibility = "visible";
+                document.getElementById('r1-3').style.visibility = "visible";
+            } else if (multStep === 2) {
+                exp.innerText = "Paso 3: Ahora las decenas (5). Ponemos un 'X' para el primer saltito (escalerita).";
+                document.getElementById('r2-s1').style.visibility = "visible";
+            } else if (multStep === 3) {
+                exp.innerText = "Paso 4: 5 x 367 = 1835. Lo escribimos a la par de la 'X'.";
+                document.getElementById('r2-1').style.visibility = "visible";
+                document.getElementById('r2-2').style.visibility = "visible";
+                document.getElementById('r2-3').style.visibility = "visible";
+                document.getElementById('r2-4').style.visibility = "visible";
+            } else if (multStep === 4) {
+                exp.innerText = "Paso 5: Ahora las centenas (2). ¡Necesitamos DOS saltitos 'X' 'X'!";
+                document.getElementById('r3-s1').style.visibility = "visible";
+                document.getElementById('r3-s2').style.visibility = "visible";
+            } else if (multStep === 5) {
+                exp.innerText = "Paso 6: 2 x 367 = 734. Desplazado dos espacios a la izquierda.";
+                document.getElementById('r3-1').style.visibility = "visible";
+                document.getElementById('r3-2').style.visibility = "visible";
+                document.getElementById('r3-3').style.visibility = "visible";
+            } else if (multStep === 6) {
+                exp.innerText = "Paso 7: Por último, sumamos las tres filas para obtener el Producto Final: 92,117.";
+                document.getElementById('final-line').style.visibility = "visible";
+                document.getElementById('f-1').style.visibility = "visible";
+                document.getElementById('f-2').style.visibility = "visible";
+                document.getElementById('f-3').style.visibility = "visible";
+                document.getElementById('f-4').style.visibility = "visible";
+                document.getElementById('f-5').style.visibility = "visible";
+                btn.style.display = "none";
+            }
+        }
+
+        function resetSteps() {
+            multStep = 0;
+            const exp = document.getElementById('mult-explanation');
+            exp.innerText = "Paso 1: Empezamos por las unidades del multiplicador: 1 x 367.";
+
+            const ids = ['r1-1', 'r1-2', 'r1-3', 'r2-1', 'r2-2', 'r2-3', 'r2-4', 'r2-s1', 'r3-1', 'r3-2', 'r3-3', 'r3-s1', 'r3-s2',
+                'f-1', 'f-2', 'f-3', 'f-4', 'f-5', 'final-line'];
+            ids.forEach(id => document.getElementById(id).style.visibility = "hidden");
+
+            document.getElementById('btn-mult-step').style.display = "inline-block";
+        }
+
+        function changeExp(n) {
+            document.getElementById('dyn-exp').innerText = n;
+            let res = Math.pow(2, n);
+            let steps = new Array(n).fill(2).join(" x ");
+            document.getElementById('dyn-result').innerText = `${steps} = ${res}`;
+        }
+
+        function checkQ(correct, btn) {
+            const feed = document.getElementById('quiz-feed');
+            if (correct) {
+                btn.style.background = "#f0fff4";
+                btn.style.borderColor = "var(--secondary-green)";
+                feed.innerText = "¡Correcto! El producto es el nombre elegante del resultado.";
+                feed.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fff5f5";
+                btn.style.borderColor = "var(--primary-red)";
+                feed.innerText = "¡Intenta de nuevo! Empieza con P...";
+                feed.style.color = "var(--primary-red)";
+            }
+        }
+    </script>
+</body>
+
+</html>

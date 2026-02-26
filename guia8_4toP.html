@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 8: Suma y Resta de 5 cifras - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 60px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        /* Operation Table */
+        .math-table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            position: relative;
+        }
+
+        .math-table td {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            border: 1px solid #edf2f7;
+            position: relative;
+        }
+
+        .carry {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue-dark);
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .carry.active {
+            opacity: 1;
+        }
+
+        .result-row {
+            border-top: 4px solid var(--primary-blue-dark);
+            color: var(--primary-orange);
+        }
+
+        .op-sign {
+            position: absolute;
+            left: -50px;
+            bottom: 10px;
+            font-size: 2rem;
+        }
+
+        /* Borrow animation */
+        .borrow-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-red);
+            top: 50%;
+            left: 0;
+            transform: rotate(-45deg);
+            display: none;
+        }
+
+        .borrow-line.active {
+            display: block;
+        }
+
+        .new-val {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            font-size: 1rem;
+            color: var(--primary-red);
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 10px 30px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            margin: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2d3748;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #fff;
+            border-color: var(--primary-orange);
+            transform: translateX(5px);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 8: Sumas y Restas (5 cifras)</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">➕ ➖</div>
+                    <h1>El Poder de las Operaciones</h1>
+                    <h2>Sumas y Restas hasta 99,999</h2>
+                    <p>Hoy aprenderemos a manejar números de 5 cifras como expertos. ¡Veremos qué pasa cuando los
+                        números "llevan" o "piden prestado"!</p>
+                    <button class="btn-action" onclick="nextS()">¡Comenzar! 🚀</button>
+                </div>
+
+                <!-- 2. Suma con Llevadas Intro -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🎈</div>
+                    <h2>La Burbuja de la Suma</h2>
+                    <p>Cuando sumamos dos números y el resultado es 10 o más, creamos una <strong>llevada</strong>. Es
+                        como una burbuja que flota a la siguiente columna.</p>
+                    <div
+                        style="background: #fdf2f2; padding: 20px; border-radius: 15px; border: 2px dashed var(--primary-orange);">
+                        <span style="font-size: 1.5rem;">9 + 3 = 12</span><br>
+                        Dejo el <span style="color: var(--primary-orange); font-weight: bold;">2</span> y la burbuja
+                        <span
+                            style="background: var(--primary-yellow); border-radius: 50%; padding: 2px 8px; font-weight: bold;">1</span>
+                        sube.
+                    </div>
+                </div>
+
+                <!-- 3. Simulador de Suma -->
+                <div class="slide">
+                    <h2>Simulador: ¡Lleva la Burbuja!</h2>
+                    <p>Suma las unidades (8+4). Observa cómo la decena sobrante se convierte en una burbuja.</p>
+
+                    <div id="sum-explanation"
+                        style="min-height: 60px; background: #fffaf0; padding: 15px; border-radius: 10px; border: 1px solid #feebc8; margin-bottom: 20px; font-weight: 500; color: var(--primary-blue-dark);">
+                        Paso 1: Sumamos las unidades: 8 + 4 = 12.
+                    </div>
+
+                    <table class="math-table">
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <div class="carry" id="carry1">1</div>4
+                            </td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>4</td>
+                            <div class="op-sign">+</div>
+                        </tr>
+                        <tr class="result-row">
+                            <td id="res1">?</td>
+                            <td id="res2">?</td>
+                            <td id="res3">?</td>
+                        </tr>
+                    </table>
+
+                    <div id="sum-controls">
+                        <button class="btn-action" id="btn-step" onclick="nextSumStep()">Siguiente Paso ⏩</button>
+                        <button class="btn-action" onclick="resetSum()">Reiniciar</button>
+                    </div>
+                </div>
+
+                <!-- 4. La Resta con Préstamo -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🤝</div>
+                    <h2>¿Me prestas un 10?</h2>
+                    <p>Si el número de arriba es más pequeño que el de abajo, le pedimos ayuda al vecino de la
+                        izquierda.</p>
+                    <div
+                        style="background: #ebf8ff; padding: 20px; border-radius: 15px; border: 2px dashed var(--primary-blue);">
+                        El vecino disminuye en 1 y nosotros ganamos 10. <br>
+                        ¡Ahora podemos restar!
+                    </div>
+                </div>
+
+                <!-- 5. Simulador de Resta -->
+                <div class="slide">
+                    <h2>Simulador: ¡Pide Ayuda!</h2>
+                    <p>No podemos restar 2 - 5. ¡Pide prestado al vecino 4!</p>
+
+                    <div id="sub-explanation"
+                        style="min-height: 60px; background: #ebf8ff; padding: 15px; border-radius: 10px; border: 1px solid #bee3f8; margin-bottom: 20px; font-weight: 500; color: var(--primary-blue-dark);">
+                        Paso 1: Intentamos restar las unidades: 2 - 5. ¡No se puede!
+                    </div>
+
+                    <table class="math-table" id="resta-table">
+                        <tr>
+                            <td>
+                                <div class="borrow-line" id="b-line"></div>
+                                <div id="v-val">4</div>
+                            </td>
+                            <td>
+                                <div id="u-val">2</div>
+                                <div class="new-val" id="n-val" style="display:none; color: var(--primary-red);">12
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>5</td>
+                            <div class="op-sign">−</div>
+                        </tr>
+                        <tr class="result-row">
+                            <td id="res-r1">?</td>
+                            <td id="res-r2">?</td>
+                        </tr>
+                    </table>
+
+                    <div id="sub-controls">
+                        <button class="btn-action" id="btn-sub-step" onclick="nextSubStep()">Siguiente Paso ⏩</button>
+                        <button class="btn-action" onclick="resetResta()">Reiniciar</button>
+                    </div>
+                </div>
+
+                <!-- 6. Reto de 5 cifras -->
+                <div class="slide">
+                    <h2>Reto Final: Gran Operación</h2>
+                    <p>¿Cuánto es la suma de 50,000 + 45,000?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkFinal(false, this)">A) 85,000</button>
+                        <button class="quiz-option" onclick="checkFinal(true, this)">B) 95,000</button>
+                        <button class="quiz-option" onclick="checkFinal(false, this)">C) 100,000</button>
+                    </div>
+                    <div id="final-feed" style="font-weight: bold; margin-top: 15px;"></div>
+                </div>
+
+                <!-- 7. Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🎓</div>
+                    <h1>¡Maestro de Operaciones!</h1>
+                    <p>Has aprendido los secretos de la suma y la resta con números grandes. ¡Nada puede detenerte!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Lección</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 7</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.style.display = cur === 0 ? 'none' : 'flex';
+            nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        let sumStep = 0;
+        function nextSumStep() {
+            const exp = document.getElementById('sum-explanation');
+            const carry = document.getElementById('carry1');
+            const res3 = document.getElementById('res3');
+            const res2 = document.getElementById('res2');
+            const res1 = document.getElementById('res1');
+            const btn = document.getElementById('btn-step');
+
+            sumStep++;
+
+            if (sumStep === 1) {
+                exp.innerText = "Paso 2: Como 12 es mayor que 9, dejamos el 2 en las unidades y el 1 se convierte en globo.";
+                res3.innerText = "2";
+                res3.style.color = "var(--primary-orange)";
+            } else if (sumStep === 2) {
+                exp.innerText = "Paso 3: ¡El globo vuela a la columna de las decenas! Ahora sumamos 1 (globo) + 4 + 1.";
+                carry.classList.add('active');
+                carry.style.animation = "bounce 1s infinite";
+            } else if (sumStep === 3) {
+                exp.innerText = "Paso 4: 1 + 4 + 1 = 6. Escribimos el 6 en las decenas.";
+                res2.innerText = "6";
+                res2.style.color = "var(--primary-orange)";
+            } else if (sumStep === 4) {
+                exp.innerText = "Paso 5: Finalmente sumamos las centenas: 2 + 1 = 3.";
+                res1.innerText = "3";
+                res1.style.color = "var(--primary-orange)";
+                btn.style.display = "none";
+            }
+        }
+
+        function resetSum() {
+            sumStep = 0;
+            const exp = document.getElementById('sum-explanation');
+            exp.innerText = "Paso 1: Sumamos las unidades: 8 + 4 = 12.";
+            document.getElementById('carry1').classList.remove('active');
+            document.getElementById('res1').innerText = "?";
+            document.getElementById('res2').innerText = "?";
+            document.getElementById('res3').innerText = "?";
+            document.getElementById('res1').style.color = "inherit";
+            document.getElementById('res2').style.color = "inherit";
+            document.getElementById('res3').style.color = "inherit";
+            document.getElementById('btn-step').style.display = "inline-block";
+        }
+
+        let subStep = 0;
+        function nextSubStep() {
+            const exp = document.getElementById('sub-explanation');
+            const bLine = document.getElementById('b-line');
+            const vVal = document.getElementById('v-val');
+            const nVal = document.getElementById('n-val');
+            const uVal = document.getElementById('u-val');
+            const resR1 = document.getElementById('res-r1');
+            const resR2 = document.getElementById('res-r2');
+            const btn = document.getElementById('btn-sub-step');
+
+            subStep++;
+
+            if (subStep === 1) {
+                exp.innerText = "Paso 2: Le pedimos 1 prestado al vecino (4). El 4 se tacha y se convierte en 3.";
+                bLine.classList.add('active');
+                vVal.innerHTML = '<span style="color:red">3</span>';
+            } else if (subStep === 2) {
+                exp.innerText = "Paso 3: Ese 1 que pedimos vale 10. Lo sumamos a nuestro 2: ¡Ahora tenemos 12!";
+                nVal.style.display = "block";
+                uVal.style.color = "#cbd5e0";
+            } else if (subStep === 3) {
+                exp.innerText = "Paso 4: Ahora sí: 12 - 5 = 7. Escribimos el 7 en las unidades.";
+                resR2.innerText = "7";
+                resR2.style.color = "var(--primary-red)";
+            } else if (subStep === 4) {
+                exp.innerText = "Paso 5: Finalmente restamos las decenas: 3 - 1 = 2.";
+                resR1.innerText = "2";
+                resR1.style.color = "var(--primary-red)";
+                btn.style.display = "none";
+            }
+        }
+
+        function resetResta() {
+            subStep = 0;
+            const exp = document.getElementById('sub-explanation');
+            exp.innerText = "Paso 1: Intentamos restar las unidades: 2 - 5. ¡No se puede!";
+            document.getElementById('b-line').classList.remove('active');
+            document.getElementById('v-val').innerText = "4";
+            document.getElementById('n-val').style.display = "none";
+            document.getElementById('u-val').style.color = "inherit";
+            document.getElementById('res-r1').innerText = "?";
+            document.getElementById('res-r2').innerText = "?";
+            document.getElementById('res-r1').style.color = "inherit";
+            document.getElementById('res-r2').style.color = "inherit";
+            document.getElementById('btn-sub-step').style.display = "inline-block";
+        }
+
+        function checkFinal(correct, btn) {
+            const feed = document.getElementById('final-feed');
+            if (correct) {
+                btn.style.background = "#f0fff4";
+                btn.style.borderColor = "var(--secondary-green)";
+                feed.innerText = "¡Muy bien! 50 + 45 = 95 mil.";
+                feed.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fff5f5";
+                btn.style.borderColor = "var(--primary-red)";
+                feed.innerText = "¡Casi! Suma 5 + 4 y agrega los miles.";
+                feed.style.color = "var(--primary-red)";
+            }
+        }
+    </script>
+</body>
+
+</html>

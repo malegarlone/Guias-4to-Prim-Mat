@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 7: Sistemas Romano y Maya - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 60px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        /* Roman Grid */
+        .roman-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .roman-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .roman-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-orange);
+        }
+
+        .roman-sym {
+            font-family: 'Outfit';
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+        }
+
+        .roman-val {
+            font-size: 0.7rem;
+            color: var(--primary-orange);
+            font-weight: bold;
+        }
+
+        /* Rule boxes fix */
+        .rules-container {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 850px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        .rule-box {
+            flex: 1;
+            min-width: 0;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            border-left: 5px solid;
+        }
+
+        /* Mayan Temple/Positions */
+        .mayan-board {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+            background: #fdf2f2;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #b7791f;
+            width: 280px;
+            margin: 20px 0;
+        }
+
+        .mayan-level {
+            height: 60px;
+            background: white;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .level-label {
+            position: absolute;
+            left: -100px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #b7791f;
+            text-align: right;
+            width: 90px;
+        }
+
+        .mayan-dot {
+            width: 12px;
+            height: 12px;
+            background: #4a5568;
+            border-radius: 50%;
+            margin: 2px;
+        }
+
+        .mayan-bar {
+            width: 40px;
+            height: 6px;
+            background: #2d3748;
+            border-radius: 3px;
+            margin: 2px;
+        }
+
+        .mayan-shell {
+            font-size: 1.5rem;
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 10px 30px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2d3748;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #fff;
+            border-color: var(--primary-orange);
+            transform: translateX(5px);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 7: Sistemas Romano y Maya</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🏛️ 🏺</div>
+                    <h1>Viaje al Pasado</h1>
+                    <h2>Numeración Romana y Maya</h2>
+                    <p>Hoy descubriremos cómo escribían los números dos grandes civilizaciones. ¡Es como descifrar un
+                        código secreto!</p>
+                    <button class="btn-action" onclick="nextS()">¡Comenzar Viaje! 🚀</button>
+                </div>
+
+                <!-- 2. Sistema Romano Intro -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">📜</div>
+                    <h2>Sistema Romano</h2>
+                    <p>Los romanos usaban letras mayúsculas para representar valores. Estos son los 7 símbolos básicos
+                        que debes recordar:</p>
+                    <div class="roman-grid">
+                        <div class="roman-card">
+                            <div class="roman-sym">I</div>
+                            <div class="roman-val">1</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">V</div>
+                            <div class="roman-val">5</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">X</div>
+                            <div class="roman-val">10</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">L</div>
+                            <div class="roman-val">50</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">C</div>
+                            <div class="roman-val">100</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">D</div>
+                            <div class="roman-val">500</div>
+                        </div>
+                        <div class="roman-card">
+                            <div class="roman-sym">M</div>
+                            <div class="roman-val">1000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Reglas Romanas -->
+                <div class="slide">
+                    <h2>Reglas de Oro</h2>
+                    <p>Para escribir números romanos, seguimos dos reglas principales:</p>
+                    <div class="rules-container">
+                        <div class="rule-box" style="border-color: var(--primary-orange); background: #fffaf0;">
+                            <strong>1. Suma:</strong> Si una letra menor va después de una mayor, se suma. <br> VI = 5 +
+                            1 = 6
+                        </div>
+                        <div class="rule-box" style="border-color: var(--primary-blue); background: #ebf8ff;">
+                            <strong>2. Resta:</strong> Si una letra menor va antes de una mayor, se resta. <br> IV = 5 -
+                            1 = 4
+                        </div>
+                    </div>
+                    <p>Recuerda: ¡No puedes repetir una letra más de 3 veces seguidas!</p>
+                </div>
+
+                <!-- 4. Reto Romano -->
+                <div class="slide">
+                    <h2>Reto del Centurión</h2>
+                    <p>¿Cómo se escribe el número 25 en romano?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">A) XXV V</button>
+                        <button class="quiz-option" onclick="checkQ(1, true, this)">B) XXV</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">C) XV X</button>
+                    </div>
+                    <div id="feed-q1" style="font-weight: bold; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 5. Sistema Maya Intro -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🌴</div>
+                    <h2>Sistema Maya</h2>
+                    <p>Los mayas usaban solo 3 símbolos: un Punto, una Barra y un Caracol (para el cero).</p>
+                    <div
+                        style="display: flex; gap: 40px; justify-content: center; background: #fdf2f2; padding: 25px; border-radius: 15px; border: 2px solid #b7791f; margin: 15px 0;">
+                        <div>
+                            <div class="mayan-dot" style="margin: 0 auto 5px;"></div> 1
+                        </div>
+                        <div>
+                            <div class="mayan-bar" style="margin: 0 auto 5px;"></div> 5
+                        </div>
+                        <div>
+                            <div class="mayan-shell">🐚</div> 0
+                        </div>
+                    </div>
+                    <p>¡Su sistema es vigesimal, lo que significa que cuentan de 20 en 20!</p>
+                </div>
+
+                <!-- 6. Posiciones Mayas -->
+                <div class="slide">
+                    <h2>Niveles de Sabiduría</h2>
+                    <p>Los mayas escriben de abajo hacia arriba. Cada nivel multiplica el valor:</p>
+                    <div class="mayan-board" style="margin-left: 100px;">
+                        <div class="mayan-level">
+                            <div class="level-label">4º Nivel<br>(x 8,000)</div>
+                        </div>
+                        <div class="mayan-level">
+                            <div class="level-label">3º Nivel<br>(x 400)</div>
+                        </div>
+                        <div class="mayan-level">
+                            <div class="level-label">2º Nivel<br>(x 20)</div>
+                            <div class="mayan-dot"></div>
+                        </div>
+                        <div class="mayan-level">
+                            <div class="level-label">1º Nivel<br>(x 1)</div>
+                            <div class="mayan-bar"></div>
+                        </div>
+                    </div>
+                    <p>En este ejemplo: (1 x 20) + (5 x 1) = 25</p>
+                </div>
+
+                <!-- 7. Reto Maya -->
+                <div class="slide">
+                    <h2>Reto del Chilam Balam</h2>
+                    <p>¿Qué nivel representa la multiplicación por 400?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">A) El 1º nivel</button>
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">B) El 2º nivel</button>
+                        <button class="quiz-option" onclick="checkQ(2, true, this)">C) El 3º nivel</button>
+                    </div>
+                    <div id="feed-q2" style="font-weight: bold; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 8. Comparación -->
+                <div class="slide">
+                    <h2>¿En qué se parecen?</h2>
+                    <p>Ambos sistemas son fascinantes y nos enseñan que hay muchas formas de representar la realidad.
+                    </p>
+                    <div style="display: flex; gap: 20px; width: 100%; max-width: 600px;">
+                        <div
+                            style="flex: 1; padding: 20px; border: 2px solid var(--primary-blue-dark); border-radius: 15px;">
+                            <strong>Romano</strong><br>Horizontal<br>7 Símbolos<br>Base 10
+                        </div>
+                        <div style="flex: 1; padding: 20px; border: 2px solid #b7791f; border-radius: 15px;">
+                            <strong>Maya</strong><br>Vertical<br>3 Símbolos<br>Base 20
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🎖️</div>
+                    <h1>¡Historiador Matemático!</h1>
+                    <p>Has dominado los sistemas de las grandes civilizaciones. ¡Sigue explorando el mundo de los
+                        números!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Aventura</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 9</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.style.display = cur === 0 ? 'none' : 'flex';
+            nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        function checkQ(id, correct, btn) {
+            const feed = document.getElementById(`feed-q${id}`);
+            if (correct) {
+                btn.style.background = "#f0fff4";
+                btn.style.borderColor = "var(--secondary-green)";
+                feed.innerText = id === 1 ? "¡Excelente! X + X + V = 25." : "¡Exacto! 20 x 20 = 400. Es el tercer nivel.";
+                feed.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fff5f5";
+                btn.style.borderColor = "var(--primary-red)";
+                feed.innerText = "¡Casi! Piénsalo un poco más.";
+                feed.style.color = "var(--primary-red)";
+            }
+        }
+    </script>
+</body>
+
+</html>

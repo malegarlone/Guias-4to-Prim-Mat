@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 5.2: Operación entre Conjuntos - 4to Primaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --primary-blue-dark: #24424e;
+            --primary-orange: #db6015;
+            --primary-yellow: #f1b42f;
+            --secondary-green: #22c55e;
+            --primary-red: #ef4444;
+            --white: #ffffff;
+            --bg-canvas: #e9eff3;
+            --header-bg: #24424e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-orange);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-blue-dark);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 750px;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        /* Set Visuals */
+        .bag-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .bag {
+            width: 180px;
+            height: 200px;
+            border: 4px solid var(--primary-blue-dark);
+            border-radius: 40% 40% 20% 20%;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            justify-content: center;
+            padding: 10px;
+            background: #fdfdfd;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .bag-label {
+            position: absolute;
+            top: -35px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            font-family: 'Outfit';
+        }
+
+        .fruit {
+            font-size: 2.2rem;
+            margin: 5px;
+        }
+
+        .toggle-card {
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            max-width: 550px;
+            margin: 15px 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .venn-sim {
+            position: relative;
+            width: 400px;
+            height: 250px;
+            margin: 20px 0;
+        }
+
+        .v-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 3px solid;
+            position: absolute;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .v-a {
+            border-color: var(--primary-blue-dark);
+            left: 30px;
+            background: rgba(36, 66, 78, 0.05);
+        }
+
+        .v-b {
+            border-color: var(--primary-orange);
+            right: 30px;
+            background: rgba(219, 96, 21, 0.05);
+        }
+
+        .active-region {
+            background: var(--primary-yellow) !important;
+            z-index: 10;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 20px;
+            display: none;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            transition: width 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            padding: 12px 35px;
+            border: 2px solid var(--primary-blue-dark);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-blue-dark);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 18px 25px;
+            margin: 12px 0;
+            background: #f8fafc;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #2d3748;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: #fff;
+            border-color: var(--primary-orange);
+            transform: translateX(5px);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header-bar">
+            <span>Colegio Escolaris - Matemática 4toP</span>
+            <span>Lección 5.2: Operaciones entre Conjuntos</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <div id="container">
+                <!-- 1. Portada -->
+                <div class="slide">
+                    <div style="font-size: 4.5rem; margin-bottom: 15px;">🎒 🍎</div>
+                    <h1>Mundo de Conjuntos</h1>
+                    <h2>Unión, Intersección y Diferencia</h2>
+                    <p>Organizando elementos de forma gráfica y escrita</p>
+                    <button class="btn-action" onclick="nextS()">¡Comenzar! 🚀</button>
+                </div>
+
+                <!-- 2. Introducción -->
+                <div class="slide">
+                    <h2>¿Qué es un Conjunto?</h2>
+                    <p>Imagina que tienes una bolsa donde guardas tus frutas favoritas. El círculo (o la bolsa)
+                        representa al conjunto.</p>
+                    <div class="bag-container">
+                        <svg width="200" height="220" viewBox="0 0 200 220">
+                            <!-- Bag shape -->
+                            <path d="M40,60 C40,20 160,20 160,60 L170,180 C170,200 30,200 30,180 Z" fill="#fdfdfd"
+                                stroke="var(--primary-blue-dark)" stroke-width="4" />
+                            <text x="20" y="30" font-family="Outfit" font-size="24" font-weight="bold"
+                                fill="var(--primary-blue-dark)">A</text>
+                            <text x="70" y="110" font-size="40">🍎</text>
+                            <text x="110" y="140" font-size="40">🍌</text>
+                            <text x="60" y="160" font-size="40">🍊</text>
+                        </svg>
+                    </div>
+                    <p>A es el conjunto de las frutas. Los dibujos son sus elementos.</p>
+                </div>
+
+                <!-- 3. Extensión -->
+                <div class="slide">
+                    <h2>Por Extensión</h2>
+                    <p>Escribimos todos los elementos dentro de llaves { }.</p>
+                    <div class="toggle-card">
+                        A = {manzana, banano, naranja}
+                    </div>
+                    <p>Las llaves funcionan como la bolsa que contiene las frutas.</p>
+                </div>
+
+                <!-- 4. Comprensión -->
+                <div class="slide">
+                    <h2>Por Comprensión</h2>
+                    <p>Solo mencionamos la característica que tienen en común.</p>
+                    <div class="toggle-card" style="border-color: var(--primary-orange);">
+                        A = { x | x es una fruta }
+                    </div>
+                    <p>¡Aquí la "x" representa a cualquier fruta!</p>
+                </div>
+
+                <!-- 5. Unión (U) -->
+                <div class="slide">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">🤝</div>
+                    <h2>Unión (∪)</h2>
+                    <p>Es cuando juntamos todos los elementos de dos conjuntos en uno solo.</p>
+                    <div class="venn-sim">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <!-- Intersection filled area -->
+                            <circle cx="140" cy="125" r="95" fill="var(--primary-yellow)"
+                                stroke="var(--primary-blue-dark)" stroke-width="3" />
+                            <circle cx="260" cy="125" r="95" fill="var(--primary-yellow)" stroke="var(--primary-orange)"
+                                stroke-width="3" />
+                            <text x="90" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">M</text>
+                            <text x="290" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">N</text>
+                        </svg>
+                    </div>
+                    <p>M ∪ N = Todos los elementos de M o de N.</p>
+                </div>
+
+                <!-- 6. Intersección (∩) -->
+                <div class="slide">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">💎</div>
+                    <h2>Intersección (∩)</h2>
+                    <p>Es el grupo formado solo por lo que se repite en ambos.</p>
+                    <div class="venn-sim">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <defs>
+                                <clipPath id="circleM_clip">
+                                    <circle cx="140" cy="125" r="95" />
+                                </clipPath>
+                            </defs>
+                            <circle cx="140" cy="125" r="95" fill="white" stroke="var(--primary-blue-dark)"
+                                stroke-width="3" />
+                            <circle cx="260" cy="125" r="95" fill="white" stroke="var(--primary-orange)"
+                                stroke-width="3" />
+                            <!-- Only the overlap is yellow -->
+                            <circle cx="260" cy="125" r="95" fill="var(--primary-yellow)" clip-path="url(#circleM_clip)"
+                                opacity="0.9" />
+                            <text x="90" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">M</text>
+                            <text x="290" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">N</text>
+                        </svg>
+                    </div>
+                    <p>¡Buscamos el tesoro compartido!</p>
+                </div>
+
+                <!-- 7. Diferencia (M - N) -->
+                <div class="slide">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">➖</div>
+                    <h2>Diferencia ( − )</h2>
+                    <p>M menos N: Son los elementos que están en M pero que NO están en N.</p>
+                    <div class="venn-sim">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <defs>
+                                <mask id="mask_N">
+                                    <rect width="400" height="250" fill="white" />
+                                    <circle cx="260" cy="125" r="95" fill="black" />
+                                </mask>
+                            </defs>
+                            <circle cx="140" cy="125" r="95" fill="var(--primary-yellow)" mask="url(#mask_N)" />
+                            <circle cx="140" cy="125" r="95" fill="none" stroke="var(--primary-blue-dark)"
+                                stroke-width="3" />
+                            <circle cx="260" cy="125" r="95" fill="none" stroke="var(--primary-orange)"
+                                stroke-width="3" />
+                            <text x="90" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">M</text>
+                            <text x="290" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">N</text>
+                        </svg>
+                    </div>
+                    <p>Solo nos quedamos con la parte propia de M.</p>
+                </div>
+
+                <!-- 8. Diferencia Simétrica (Δ) -->
+                <div class="slide">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">⭐</div>
+                    <h2>Diferencia Simétrica (Δ)</h2>
+                    <p>Elegimos lo que es único de M y lo que es único de N.</p>
+                    <div class="venn-sim">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <defs>
+                                <mask id="mask_middle">
+                                    <rect width="400" height="250" fill="white" />
+                                    <!-- Use clip to define intersection as a black mask -->
+                                    <g clip-path="url(#circleM_clip)">
+                                        <circle cx="260" cy="125" r="95" fill="black" />
+                                    </g>
+                                </mask>
+                            </defs>
+                            <g mask="url(#mask_middle)">
+                                <circle cx="140" cy="125" r="95" fill="var(--primary-yellow)" />
+                                <circle cx="260" cy="125" r="95" fill="var(--primary-yellow)" />
+                            </g>
+                            <circle cx="140" cy="125" r="95" fill="none" stroke="var(--primary-blue-dark)"
+                                stroke-width="3" />
+                            <circle cx="260" cy="125" r="95" fill="none" stroke="var(--primary-orange)"
+                                stroke-width="3" />
+                            <text x="90" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">M</text>
+                            <text x="290" y="130" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">N</text>
+                        </svg>
+                    </div>
+                    <p>¡Es todo menos la parte repetida!</p>
+                </div>
+
+                <!-- 9. Complemento (A') -->
+                <div class="slide">
+                    <div style="font-size: 3.5rem; margin-bottom: 15px;">🌌</div>
+                    <h2>Complemento (Aᶜ)</h2>
+                    <p>Es todo lo que está afuera de A pero dentro del Universo (U).</p>
+                    <div class="venn-sim">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <!-- Universe rectangle filled with yellow (the complement part) -->
+                            <rect x="50" y="25" width="300" height="200" fill="var(--primary-yellow)"
+                                stroke="var(--primary-blue-dark)" stroke-width="3" rx="10" />
+                            <!-- A circle as a white "hole" -->
+                            <circle cx="200" cy="125" r="70" fill="white" stroke="var(--primary-blue-dark)"
+                                stroke-width="3" />
+                            <text x="185" y="135" font-family="Outfit" font-size="28" font-weight="bold"
+                                fill="var(--primary-blue-dark)">A</text>
+                            <text x="320" y="55" font-family="Outfit" font-size="24" font-weight="bold"
+                                fill="var(--primary-blue-dark)">U</text>
+                        </svg>
+                    </div>
+                    <p>¡Toda la parte amarilla es lo que le falta a A para ser como el Universo!</p>
+                </div>
+
+                <!-- 10. Quiz -->
+                <div class="slide">
+                    <h2>Reto de Maestro</h2>
+                    <p>¿Qué símbolo representa la unión de los conjuntos M y N?</p>
+                    <div style="width: 100%; max-width: 500px;">
+                        <button class="quiz-option" onclick="checkQ(1, true, this)">A) M ∪ N</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">B) M ∩ N</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">C) M − N</button>
+                    </div>
+                    <div id="feed-q1" style="font-weight: bold; margin-top: 15px;"></div>
+                </div>
+
+                <!-- 11. Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem; animation: bounce 2s infinite; margin-bottom: 20px;">🏆</div>
+                    <h1>¡Eres Increíble!</h1>
+                    <p>Has dominado las operaciones de conjuntos. ¡Sigue brillando!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Aventura</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 11</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.style.display = cur === 0 ? 'none' : 'flex';
+            nextB.style.display = cur === slides.length - 1 ? 'none' : 'flex';
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        function checkQ(id, correct, btn) {
+            const feed = document.getElementById(`feed-q${id}`);
+            if (correct) {
+                btn.style.background = "#f0fff4";
+                btn.style.borderColor = "var(--secondary-green)";
+                feed.innerText = "¡Excelente! La U es de Unión. 🌟";
+                feed.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fff5f5";
+                btn.style.borderColor = "var(--primary-red)";
+                feed.innerText = "¡Casi! La ∪ parece una sonrisa de Unión.";
+                feed.style.color = "var(--primary-red)";
+            }
+        }
+    </script>
+</body>
+
+</html>
