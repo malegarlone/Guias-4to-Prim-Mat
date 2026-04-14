@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 14: Razones y Proporciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.22rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #444;
+            max-width: 700px;
+            line-height: 1.5;
+        }
+
+        .info-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.5rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 20px;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            padding: 0;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem auto;
+        }
+
+        .option-btn {
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .math-numerator {
+            padding: 0 4px;
+            border-bottom: 2px solid currentColor;
+            width: 100%;
+            text-align: center;
+        }
+
+        .math-denominator {
+            padding: 0 4px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .ratio-item {
+            font-size: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Guía 14: Razones y Proporciones</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">⚖️🔄</div>
+                    <h1 style="font-size: 2.5rem;">Razones y Proporciones</h1>
+                    <h2 style="font-weight: 600;">Lección 14 &bull; 4&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">Descubre cómo se relacionan las cantidades entre sí
+                        para mantener el equilibrio perfecto.</p>
+                </div>
+
+                <!-- ¿Qué es una Razón? -->
+                <div class="slide">
+                    <h2>¿Qué es una Razón?</h2>
+                    <p>Una razón es una forma de <strong>comparar dos cantidades</strong>.</p>
+                    <div class="info-card" style="padding: 20px;">
+                        <p style="font-size: 1.1rem; margin-bottom: 15px;">Por ejemplo, en una receta familiar:</p>
+                        <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-orange);">"Por cada 2
+                            manzanas, necesitamos 3 naranjas"</p>
+                        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                            <div class="ratio-item">🍎🍎</div>
+                            <div style="font-size: 2rem; display: flex; align-items: center;">:</div>
+                            <div class="ratio-item">🍊🍊🍊</div>
+                        </div>
+                        <p style="margin-top: 15px;">Se escribe <strong>2 : 3</strong> o como fracción
+                            <strong>2/3</strong>, y se lee "dos es a tres".
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Los Disfraces de la División (Parte 1) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🎭</div>
+                    <h2>Los "Disfraces" de la División</h2>
+                    <p>En Matemática, una misma operación puede usar varios "disfraces" o símbolos distintos. ¡Todos
+                        significan que estamos dividiendo o comparando!</p>
+                    <div class="info-card" style="padding: 20px;">
+                        <ul
+                            style="list-style: none; padding: 0; margin-bottom: 5px; font-size: 1.15rem; line-height: 2;">
+                            <li><strong style="color: var(--primary-orange); font-size: 1.4rem;">:</strong> Los dos
+                                puntos (Ejemplo: <strong>2 : 3</strong>)</li>
+                            <li><strong style="color: var(--primary-green); font-size: 1.4rem;">/</strong> La línea
+                                diagonal (Ejemplo: <strong>2 / 3</strong>)</li>
+                            <li><strong style="color: var(--primary-blue-dark); font-size: 1.4rem;">&divide;</strong> El
+                                símbolo de división (Ejemplo: <strong>2 &divide; 3</strong>)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Los Disfraces de la División (Parte 2) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🤝</div>
+                    <h2>¡Todos son Hermanos!</h2>
+                    <p>Cuando veas cualquiera de estos símbolos, imagina que todos son de la misma familia y valen lo
+                        mismo.</p>
+                    <div class="info-card" style="padding: 30px;">
+                        <div
+                            style="background: white; border: 2px dashed #cbd5e0; padding: 25px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 15px; font-weight: bold; font-size: 2rem;">
+                            <span>2 / 3</span>
+                            <span style="color: #cbd5e0; margin: 0 10px;">=</span>
+                            <span>2 : 3</span>
+                            <span style="color: #cbd5e0; margin: 0 10px;">=</span>
+                            <div class="math-fraction" style="font-size: 1em;"><span
+                                    class="math-numerator">2</span><span class="math-denominator">3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ¿Qué es una Proporción? -->
+                <div class="slide">
+                    <h2>¿Qué es una Proporción?</h2>
+                    <p>Una proporción ocurre cuando <strong>dos razones son iguales</strong> o equivalentes.</p>
+                    <div class="info-card">
+                        <p style="margin-bottom: 20px;">Si para 2 manzanas uso 3 naranjas...</p>
+                        <p style="margin-bottom: 20px;">Para hacer el <strong>doble</strong> de la receta, usaré 4
+                            manzanas y 6 naranjas.</p>
+                        <div
+                            style="display: flex; gap: 10px; justify-content: center; align-items: center; font-size: 1.5rem;">
+                            <div class="math-fraction"><span class="math-numerator">2</span><span
+                                    class="math-denominator">3</span></div>
+                            <span>=</span>
+                            <div class="math-fraction" style="color: var(--primary-green);"><span
+                                    class="math-numerator">4</span><span class="math-denominator">6</span></div>
+                        </div>
+                        <p style="margin-top: 20px;">Ambas recetas saben exactamente igual. ¡Están en proporción!</p>
+                    </div>
+                </div>
+
+                <!-- Propiedad Fundamental -->
+                <div class="slide">
+                    <h2>La Propiedad Mágica</h2>
+                    <p>En cualquier proporción, <strong>si multiplicas en forma de cruz</strong> (o "X"), los resultados
+                        deben ser iguales. A esto se le llama Propiedad Fundamental.</p>
+                    <div
+                        style="background: white; border: 2px dashed var(--primary-blue-dark); padding: 30px; border-radius: 15px; margin-top: 20px;">
+                        <div style="display: flex; gap: 40px; justify-content: center; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="math-fraction" style="font-size: 2em;">
+                                    <span class="math-numerator">2</span><span class="math-denominator">3</span>
+                                </div>
+                                <span style="font-size: 2rem;">=</span>
+                                <div class="math-fraction" style="font-size: 2em; color: var(--primary-green);">
+                                    <span class="math-numerator">4</span><span class="math-denominator">6</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem;">&xrarr;</div>
+                            <div style="font-size: 1.5rem; text-align: left;">
+                                <p><strong>2 &times; 6 = <span style="color: var(--primary-orange);">12</span></strong>
+                                </p>
+                                <p><strong>3 &times; 4 = <span style="color: var(--primary-orange);">12</span></strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; color: var(--primary-orange); font-weight: bold;">¡Los productos
+                        cruzados siempre dan el mismo número!</p>
+                </div>
+
+                <!-- Encontrando el Término (Regla de Tres) -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🔍</div>
+                    <h2>Misterio del Número Faltante</h2>
+                    <p>Si sabemos que dos razones forman una proporción, podemos usar la multiplicación cruzada para
+                        hallar un número escondido.</p>
+                    <div class="info-card">
+                        <div
+                            style="font-size: 1.8rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                            <div class="math-fraction" style="font-size: 0.8em;"><span
+                                    class="math-numerator">3</span><span class="math-denominator">5</span></div>
+                            <span style="margin: 0 10px;">=</span>
+                            <div class="math-fraction" style="font-size: 0.8em;"><span
+                                    class="math-numerator">x</span><span class="math-denominator">15</span></div>
+                        </div>
+                        <div style="text-align: left; padding-left: 20px; line-height: 1.5;">
+                            <p>1️⃣ Multiplicamos los que cruzan: <strong>3 &times; 15 = 45</strong></p>
+                            <p>2️⃣ Dividimos entre el número que falta cruzar: <strong>45 &divide; 5 = 9</strong></p>
+                            <p>3️⃣ ¡El número misterioso <strong>x es 9</strong>!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto de Razón</h2>
+                    <p>En una clase hay 3 mesas por cada 6 sillas. ¿Cómo se expresa esta razón?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Al revés, esa sería la razón de sillas a mesas.')">A)
+                            6 a 3 (6:3)</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Correcto! Se comparan 3 mesas con 6 sillas.', '')">B) 3
+                            a 6 (3:6)</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Una razón compara los dos valores, no solo usa la diferencia.')">C)
+                            3 a 3 (3:3)</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- QUIZ 2 -->
+                <div class="slide">
+                    <h2>Reto de Proporción</h2>
+                    <div
+                        style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                        <p>¿Qué número (x) hace que las razones formen una proporción?</p>
+                        <div style="font-size: 1.5rem; display: flex; align-items: center; font-weight: bold;">
+                            <div class="math-fraction" style="font-size: 1em;"><span
+                                    class="math-numerator">2</span><span class="math-denominator">4</span></div>
+                            <span style="margin: 0 10px;">=</span>
+                            <div class="math-fraction" style="font-size: 1em;"><span
+                                    class="math-numerator">x</span><span class="math-denominator">8</span></div>
+                        </div>
+                    </div>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Haz la prueba cruzada: 2x8=16 y 4x2=8. No es igual.')">A)
+                            x = 2</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Prueba: 2x8=16 y 4x8=32. No cuadra.')">B) x =
+                            8</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Así es! Si multiplicas cruzado 2x8=16, y 4x4=16.', '')">C)
+                            x = 4</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Dominas a la perfección las razones y proporciones!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem;">Volver
+                        a jugar</button>
+                </div>
+            </div> <!-- slide-container -->
+        </div> <!-- viewport -->
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+        <div class="progress-bar" id="progress-bar"></div>
+    </div> <!-- app-container -->
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); if (e.key === 'ArrowLeft') prevSlide(); });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = btn.parentElement;
+
+            if (isCorrect) {
+                container.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ &iexcl;Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = feedback.parentElement.querySelector('.quiz-container');
+            container.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        updateGallery();
+    </script>
+</body>
+
+</html>
