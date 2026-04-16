@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía 12: Números Decimales y Fracciones</title>
+    <title>Guía Didáctica 12: Lectura, Escritura, Comparación y Fracciones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
@@ -275,7 +275,7 @@
     <div id="app-container">
         <header id="global-header">
             <span>Colegio Escolaris - Matemática 4to Primaria</span>
-            <span>Guía 12: Números Decimales</span>
+            <span>Guía Didáctica 12: Lectura, Escritura, Comparación de Decimales</span>
         </header>
 
         <div id="viewport">
@@ -283,8 +283,8 @@
                 <!-- Portada -->
                 <div class="slide active">
                     <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🔢🍕</div>
-                    <h1 style="font-size: 2.5rem;">Números Decimales</h1>
-                    <h2 style="font-weight: 600;">Lección 12 &bull; 4&deg; Primaria</h2>
+                    <h1 style="font-size: 2.2rem; line-height: 1.1;">Lectura, Escritura, Comparación y Decimales como Fracción</h1>
+                    <h2 style="font-weight: 600;">Guía Didáctica 12 &bull; 4&deg; Primaria</h2>
                     <p style="color: #64748b; font-style: italic;">Descubre cómo leer, escribir y comparar los números
                         que viven entre los enteros.</p>
                 </div>
@@ -294,11 +294,19 @@
                     <h2>¿Qué son los decimales?</h2>
                     <p>Los números decimales nos sirven para expresar cantidades que no son enteras. Son parte de algo
                         completo que se ha dividido en pedacitos más pequeños.</p>
-                    <div class="decimal-board">
-                        <span style="color: var(--primary-blue-dark);">3</span>
-                        <span class="decimal-point">.</span>
-                        <span style="color: var(--primary-green);">4</span>
-                        <span style="color: var(--primary-purple);">5</span>
+                    <div style="display: flex; gap: 30px; justify-content: center; width: 100%; margin-top: 10px;">
+                        <div class="decimal-board" style="padding: 15px 30px; font-size: 2.2rem; margin: 0;">
+                            <span style="color: var(--primary-blue-dark);">3</span>
+                            <span class="decimal-point">.</span>
+                            <span style="color: var(--primary-green);">4</span>
+                            <span style="color: var(--primary-purple);">5</span>
+                        </div>
+                        <div class="decimal-board" style="padding: 15px 30px; font-size: 2.2rem; margin: 0;">
+                            <span style="color: var(--primary-blue-dark);">12</span>
+                            <span class="decimal-point">.</span>
+                            <span style="color: var(--primary-green);">0</span>
+                            <span style="color: var(--primary-purple);">8</span>
+                        </div>
                     </div>
                 </div>
 
@@ -306,59 +314,74 @@
                     <h2>Lectura y Escritura</h2>
                     <p>Debemos nombrar primero la parte entera y luego la parte decimal dependiendo de cuántas cifras
                         tenga.</p>
-                    <div class="info-card" style="text-align: left; max-width: 500px;">
-                        <ul style="list-style: none; padding: 0; line-height: 1.8;">
-                            <li><strong style="color: var(--primary-green);">1 cifra:</strong> Décimos (ej. 0.<b>4</b> =
-                                cuatro décimos)</li>
-                            <li><strong style="color: var(--primary-purple);">2 cifras:</strong> Centésimos (ej.
-                                0.<b>45</b> = cuarenta y cinco centésimos)</li>
-                            <li><strong style="color: #d946ef;">3 cifras:</strong> Milésimos (ej. 0.<b>456</b> =
-                                cuatrocientos cincuenta y seis milésimos)</li>
-                        </ul>
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%;">
+                        <div class="info-card" style="text-align: left; max-width: 400px; padding: 1.2rem;">
+                            <ul style="list-style: none; padding: 0; line-height: 1.8;">
+                                <li><strong style="color: var(--primary-green);">1 cifra:</strong> Décimos <br>(ej. 0.<b>4</b> = cuatro décimos)</li>
+                                <li><strong style="color: var(--primary-purple);">2 cifras:</strong> Centésimos <br>(ej. 0.<b>45</b> = cuarenta y cinco centésimos)</li>
+                            </ul>
+                        </div>
+                        <div class="info-card" style="text-align: left; max-width: 400px; padding: 1.2rem;">
+                            <ul style="list-style: none; padding: 0; line-height: 1.8;">
+                                <li><strong style="color: #d946ef;">3 cifras:</strong> Milésimos <br>(ej. 0.<b>456</b> = cuatrocientos cincuenta y seis milésimos)</li>
+                                <li><strong style="color: var(--primary-orange);">Con enteros:</strong><br>(ej. 2.<b>07</b> = dos enteros y siete centésimos)</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
                 <div class="slide">
                     <h2>Decimales como Fracciones</h2>
                     <p>Tanto decimales como fracciones sirven para expresar partes de un todo.</p>
-                    <div
-                        style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-top: 20px;">
-                        <div
-                            style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #ccc; font-size: 2rem;">
-                            0.5
-                        </div>
-                        <div style="font-size: 2rem;">=</div>
-                        <div style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #ccc;">
-                            <div class="math-fraction">
-                                <span class="math-numerator">5</span>
-                                <span class="math-denominator">10</span>
+                    <div style="display: flex; flex-direction: column; gap: 20px; align-items: center; justify-content: center; margin-top: 20px; width: 100%;">
+                        <div style="display: flex; gap: 30px; align-items: center; justify-content: center;">
+                            <div style="background: white; padding: 15px 20px; border-radius: 10px; border: 2px solid #ccc; font-size: 1.8rem;">0.5</div>
+                            <div style="font-size: 1.8rem;">=</div>
+                            <div style="background: white; padding: 10px 20px; border-radius: 10px; border: 2px solid #ccc;">
+                                <div class="math-fraction"><span class="math-numerator">5</span><span class="math-denominator">10</span></div>
+                            </div>
+                            <div style="font-size: 1.8rem;">=</div>
+                            <div style="background: white; padding: 10px 20px; border-radius: 10px; border: 2px solid #ccc; color: var(--primary-orange);">
+                                <div class="math-fraction"><span class="math-numerator">1</span><span class="math-denominator">2</span></div>
                             </div>
                         </div>
-                        <div style="font-size: 2rem;">=</div>
-                        <div
-                            style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #ccc; color: var(--primary-orange);">
-                            <div class="math-fraction">
-                                <span class="math-numerator">1</span>
-                                <span class="math-denominator">2</span>
+                        <div style="display: flex; gap: 30px; align-items: center; justify-content: center;">
+                            <div style="background: white; padding: 15px 20px; border-radius: 10px; border: 2px solid #ccc; font-size: 1.8rem;">0.25</div>
+                            <div style="font-size: 1.8rem;">=</div>
+                            <div style="background: white; padding: 10px 20px; border-radius: 10px; border: 2px solid #ccc;">
+                                <div class="math-fraction"><span class="math-numerator">25</span><span class="math-denominator">100</span></div>
+                            </div>
+                            <div style="font-size: 1.8rem;">=</div>
+                            <div style="background: white; padding: 10px 20px; border-radius: 10px; border: 2px solid #ccc; color: var(--primary-purple);">
+                                <div class="math-fraction"><span class="math-numerator">1</span><span class="math-denominator">4</span></div>
                             </div>
                         </div>
                     </div>
-                    <p style="margin-top: 15px; font-size: 1rem; color: #666;">Cero punto cinco (cinco décimos) equivale
-                        a un medio.</p>
+                    <p style="margin-top: 15px; font-size: 1rem; color: #666;">El decimal se lee igual que su fracción original (5 décimos, 25 centésimos).</p>
                 </div>
 
                 <div class="slide">
                     <h2>Comparación de Decimales</h2>
                     <p>Para comparar dos decimales, mira primero su parte entera. Si es igual, compara la parte decimal
                         cifra a cifra, de izquierda a derecha (décimos, luego centésimos...).</p>
-                    <div class="info-card"
-                        style="font-size: 1.5rem; display: flex; justify-content: center; gap: 20px;">
-                        <span>4.<strong style="color: var(--primary-green);">3</strong>5</span>
-                        <span style="color: var(--primary-red); font-weight: bold;">&gt;</span>
-                        <span>4.<strong style="color: var(--primary-green);">1</strong>8</span>
+                    <div style="display: flex; gap: 30px; justify-content: center; width: 100%; margin-top: 10px;">
+                        <div class="info-card" style="font-size: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="display: flex; gap: 20px;">
+                                <span>4.<strong style="color: var(--primary-green);">3</strong>5</span>
+                                <span style="color: var(--primary-red); font-weight: bold;">&gt;</span>
+                                <span>4.<strong style="color: var(--primary-green);">1</strong>8</span>
+                            </div>
+                            <p style="font-size: 0.9rem; margin: 0; color: #555;">El 3 &gt; 1 en los décimos.</p>
+                        </div>
+                        <div class="info-card" style="font-size: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="display: flex; gap: 20px;">
+                                <span>2.1<strong style="color: var(--primary-purple);">0</strong></span>
+                                <span style="color: var(--primary-red); font-weight: bold;">&lt;</span>
+                                <span>2.1<strong style="color: var(--primary-purple);">5</strong></span>
+                            </div>
+                            <p style="font-size: 0.9rem; margin: 0; color: #555;">Los centésimos determinan: 0 &lt; 5.</p>
+                        </div>
                     </div>
-                    <p style="font-size: 1rem; margin-top: 10px;">¡El 3 es mayor que el 1 en los décimos, así que el
-                        primero es el mayor!</p>
                 </div>
 
                 <!-- QUIZ 1 -->
