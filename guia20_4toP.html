@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 20: Equivalencias de Peso, Capacidad y Temperatura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 720px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Fractions with CSS */
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+        }
+        .fraction-num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+        .math-equation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            background: white;
+            border: 2px dashed #94a3b8;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 8px 0;
+            color: var(--primary-blue-dark);
+        }
+        .cancel-unit {
+            text-decoration: line-through;
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+        .target-unit {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* 3-column Layout for units */
+        .columns-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 780px;
+        }
+        .column-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 15px;
+            text-align: center;
+        }
+        .column-card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+        .card-list {
+            list-style: none;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .card-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Thermometer widget styles */
+        .thermo-widget {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 15px 30px;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 5px;
+        }
+        .thermo-bg {
+            width: 30px;
+            height: 180px;
+            background: #cbd5e1;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .thermo-mercury {
+            width: 100%;
+            height: 50%;
+            background: var(--primary-red);
+            border-radius: 15px 15px 0 0;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.3s ease;
+        }
+        .thermo-bulb {
+            width: 46px;
+            height: 46px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            margin-top: -10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        .slider-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left;
+        }
+        .temp-slider {
+            width: 100%;
+            margin: 15px 0;
+            accent-color: var(--primary-red);
+        }
+        .temp-display-row {
+            display: flex;
+            gap: 20px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Guía 20: Peso, Capacidad y Temperatura</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">⚖️🥛🌡️</div>
+                    <h1>Peso, Capacidad y Temperatura</h1>
+                    <h2>Lección 20 &bull; 4&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende equivalencias y cómo realizar conversiones de peso con fracciones, cancelando unidades en el denominador!</p>
+                </div>
+
+                <!-- 2. Peso y Masa -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">⚖️</div>
+                    <h2>Medidas de Peso (Masa)</h2>
+                    <p>Usamos estas unidades para medir qué tan pesado es un objeto. En Guatemala es muy común comprar comida en <strong>libras</strong> y <strong>onzas</strong>.</p>
+                    
+                    <div class="columns-container">
+                        <div class="column-card" style="border-color: var(--primary-orange);">
+                            <div class="column-card-title" style="color: var(--primary-orange);">La Libra (lb)</div>
+                            <ul class="card-list">
+                                <li>Es la unidad de peso de uso diario.</li>
+                                <li><strong>1 libra (lb) = 16 onzas (oz)</strong></li>
+                                <li>Ejemplo: Una bolsa de frijoles o azúcar suele pesar 1 libra.</li>
+                            </ul>
+                        </div>
+                        <div class="column-card" style="border-color: var(--primary-purple);">
+                            <div class="column-card-title" style="color: var(--primary-purple);">El Kilogramo (kg) y Gramo (g)</div>
+                            <ul class="card-list">
+                                <li><strong>1 kilogramo (kg) = 1,000 gramos (g)</strong></li>
+                                <li><strong>1 kg &approx; 2.2 libras</strong></li>
+                                <li>Ejemplo: Tu propio peso corporal se mide generalmente en kilogramos o libras.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Método de Cancelación de Unidades para Peso -->
+                <div class="slide">
+                    <h2>¿Cómo convertir Peso con Fracciones?</h2>
+                    <p>Para realizar esta conversión, debemos tener en cuenta la equivalencia correspondiente (por ejemplo: <strong>1 lb = 453.592 g</strong>).</p>
+                    <p style="font-size: 0.95rem; color: #555;">Ya teniendo la equivalencia, colocamos las unidades de la siguiente forma:</p>
+                    
+                    <div class="math-equation">
+                        <span>Valor en</span>
+                        <span class="cancel-unit">lb</span>
+                        <span>×</span>
+                        <div class="math-fraction">
+                            <span class="fraction-num">453.592 <span class="target-unit">g</span></span>
+                            <span class="fraction-den">1 <span class="cancel-unit">lb</span></span>
+                        </div>
+                        <span>= Resultado en</span>
+                        <span class="target-unit">g</span>
+                    </div>
+
+                    <div class="info-card" style="text-align: left; background: #fff7ed; border-left: 5px solid var(--primary-orange);">
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #7c2d12;"><strong>¡Regla fundamental!</strong> Las unidades que queremos eliminar (las iniciales) las colocamos siempre en el <strong>denominador</strong> (abajo) para poder cancelarlas. Las unidades que buscamos van en el <strong>numerador</strong> (arriba).</p>
+                    </div>
+                </div>
+
+                <!-- 4. Ejercicio de Pelusa y Azúcar (Parte 1) -->
+                <div class="slide">
+                    <h3>El Caso de los Perritos de María</h3>
+                    <p>María tiene dos perritos: <strong>Pelusa</strong> (marrón) pesa <strong>19,300 gramos (g)</strong>. <strong>Azúcar</strong> (negro) pesa <strong>28 kilogramos (kg)</strong>.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál de los dos perros es el más pesado y cuál es su diferencia de peso?</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #f8fafc; border: 1.5px solid #cbd5e1;">
+                        <span style="font-weight: bold; color: var(--primary-orange); display: block; margin-bottom: 5px;">Paso 1: Convertir para poder comparar</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 8px;">No podemos comparar gramos y kilogramos directamente. Convertiremos los <strong>28 kg</strong> de Azúcar a gramos usando una fracción de conversión (1 kg = 1,000 g):</p>
+                        
+                        <div class="math-equation" style="margin: 5px auto; display: flex; justify-content: center; max-width: 450px;">
+                            <span>28</span>
+                            <span class="cancel-unit">kg</span>
+                            <span>×</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num">1,000 <span class="target-unit">g</span></span>
+                                <span class="fraction-den">1 <span class="cancel-unit">kg</span></span>
+                            </div>
+                            <span>= 28,000</span>
+                            <span class="target-unit">g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Ejercicio de Pelusa y Azúcar (Parte 2) -->
+                <div class="slide">
+                    <h3>El Caso de los Perritos de María</h3>
+                    <div class="info-card" style="text-align: left; background: #f0fdf4; border: 1.5px solid #bbf7d0;">
+                        <span style="font-weight: bold; color: var(--primary-green); display: block; margin-bottom: 5px;">Paso 2: Comparación y Resta</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 8px;">- Peso de Azúcar: <strong>28,000 g</strong> (28 kg)<br>- Peso de Pelusa: <strong>19,300 g</strong></p>
+                        <p style="font-weight: bold; font-size: 1.05rem; color: var(--primary-blue-dark); margin-bottom: 10px;">¡Azúcar es el más pesado! (28,000 g > 19,300 g)</p>
+                        
+                        <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 10px 0;">
+                        
+                        <span style="font-weight: bold; color: var(--primary-blue-dark); display: block; margin-bottom: 5px;">Paso 3: Calcular la diferencia</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 8px;">Restamos los dos pesos expresados en la misma unidad:</p>
+                        <p style="font-family: monospace; font-size: 1.2rem; font-weight: bold; text-align: center; color: var(--primary-orange);">28,000 g − 19,300 g = 8,700 g</p>
+                        <p style="font-size: 0.95rem; margin-top: 5px; text-align: center;">O en kilogramos: <strong>8,700 g × (1 kg / 1,000 g) = 8.7 kg</strong></p>
+                    </div>
+                </div>
+
+                <!-- 6. Capacidad -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">🥛</div>
+                    <h2>Medidas de Capacidad</h2>
+                    <p>La <strong>capacidad</strong> nos dice cuánto líquido cabe dentro de un recipiente. La unidad principal es el <strong>litro (L)</strong>, pero también usamos galones, botellas y vasos.</p>
+                    
+                    <div class="info-card" style="background: #e0f2fe; border: 2px solid var(--primary-blue-dark); max-width: 600px;">
+                        <h3 style="color: var(--primary-blue-dark); margin-bottom: 8px;">Equivalencias de Capacidad:</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 1.05rem;">
+                            <tr style="border-bottom: 1px dashed #94a3b8;">
+                                <td style="padding: 6px; text-align: left;">🍯 <strong>1 Galón</strong></td>
+                                <td style="padding: 6px; text-align: right; color: var(--primary-orange); font-weight: bold;">= 5 botellas</td>
+                            </tr>
+                            <tr style="border-bottom: 1px dashed #94a3b8;">
+                                <td style="padding: 6px; text-align: left;">🍾 <strong>1 Botella</strong></td>
+                                <td style="padding: 6px; text-align: right; color: var(--primary-blue-dark); font-weight: bold;">= 3 vasos</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px; text-align: left;">🥛 <strong>1 Litro</strong></td>
+                                <td style="padding: 6px; text-align: right; color: var(--primary-green); font-weight: bold;">= 4 vasos</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 7. Temperatura y Termómetro Interactivo -->
+                <div class="slide">
+                    <h2>¡Explora la Temperatura!</h2>
+                    <p>Mueve el control deslizante para ajustar los grados Celsius y observa su equivalente en Fahrenheit, el termómetro y cómo se siente el clima:</p>
+                    
+                    <div class="thermo-widget">
+                        <!-- Termómetro Visual -->
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div class="thermo-bg">
+                                <div class="thermo-mercury" id="mercurio" style="height: 40%;"></div>
+                            </div>
+                            <div class="thermo-bulb"></div>
+                        </div>
+                        
+                        <!-- Controles e Información -->
+                        <div class="slider-column">
+                            <div class="temp-display-row">
+                                <span style="color: #0284c7;" id="val-celsius">20 °C</span>
+                                <span style="color: #cbd5e1;">=</span>
+                                <span style="color: #e11d48;" id="val-fahren">68 °F</span>
+                            </div>
+                            
+                            <input type="range" min="-10" max="110" value="20" class="temp-slider" id="temp-range" oninput="actualizarTermometro(this.value)">
+                            
+                            <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; width: 100%; text-align: center; margin-top: 10px;">
+                                <span id="clima-desc" style="font-size: 1.1rem; font-weight: bold; color: var(--primary-blue-dark);">¡Clima agradable! 😊</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto del Peso</h2>
+                    <p>Si compramos <strong>2 libras (lb)</strong> de queso...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál es la ecuación correcta para calcular su peso en gramos (sabiendo que 1 lb = 453.592 g)?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! lb en el denominador se cancela con las 2 lb iniciales, dejando la respuesta en gramos.', '')">
+                            A) 2 lb × (453.592 g / 1 lb) = 907.184 g
+                        </button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'La unidad de libra (lb) debe quedar en el denominador para poder cancelarse.')">
+                            B) 2 lb × (1 lb / 453.592 g) = 0.004 g
+                        </button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Los factores y unidades iniciales están incorrectamente ordenados.')">
+                            C) 2 g × (453.592 lb / 1 g) = 907.184 lb
+                        </button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto resolviendo equivalencias y problemas de peso, capacidad y temperatura!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 9</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Thermometer Logic
+        function actualizarTermometro(val) {
+            const celsius = parseFloat(val);
+            document.getElementById('val-celsius').innerText = `${celsius} °C`;
+            
+            const fahrenheit = (celsius * 9/5) + 32;
+            document.getElementById('val-fahren').innerText = `${Math.round(fahrenheit)} °F`;
+            
+            const percent = ((celsius + 10) / 120) * 100;
+            document.getElementById('mercurio').style.height = `${Math.max(0, Math.min(100, percent))}%`;
+            
+            let desc = "";
+            let color = "var(--primary-blue-dark)";
+            const mercury = document.getElementById('mercurio');
+            const bulb = document.querySelector('.thermo-bulb');
+
+            if (celsius <= 0) {
+                desc = "¡Agua congelándose! 🥶❄️";
+                color = "#0284c7";
+            } else if (celsius < 15) {
+                desc = "¡Hace bastante frío! 🥶";
+                color = "#38bdf8";
+            } else if (celsius <= 25) {
+                desc = "¡Clima agradable! 😊";
+                color = "#10b981";
+            } else if (celsius <= 38) {
+                desc = "¡Hace calor! 🥵☀️";
+                color = "var(--primary-orange)";
+            } else if (celsius < 100) {
+                desc = "¡Muchísimo calor! 🥵🔥";
+                color = "var(--primary-red)";
+            } else {
+                desc = "¡Agua hirviendo! 🌡️💨";
+                color = "#991b1b";
+            }
+
+            mercury.style.backgroundColor = color;
+            bulb.style.backgroundColor = color;
+            
+            const descEl = document.getElementById('clima-desc');
+            descEl.innerText = desc;
+            descEl.style.color = color;
+        }
+
+        // Initial setup
+        actualizarTermometro(20);
+        updateGallery();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 17: Representación e Interpretación de Gráficas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card {
+            padding: 1.2rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.8rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.8rem auto;
+        }
+
+        .option-btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* SVG Graph Styling */
+        .bar {
+            transition: height 0.6s ease, y 0.6s ease;
+            cursor: pointer;
+        }
+        .bar:hover {
+            opacity: 0.9;
+        }
+        .grid-line {
+            stroke: #e2e8f0;
+            stroke-width: 1;
+            stroke-dasharray: 4;
+        }
+        .graph-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            fill: #64748b;
+            text-anchor: middle;
+        }
+        .graph-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            fill: #1e293b;
+            text-anchor: middle;
+        }
+
+        /* Pictogram items */
+        .picto-row {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            width: 100%;
+            max-width: 550px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 15px;
+            border: 1px solid #e2e8f0;
+        }
+        .picto-label {
+            width: 120px;
+            font-weight: bold;
+            text-align: left;
+            font-size: 1.05rem;
+            color: var(--primary-blue-dark);
+        }
+        .picto-icons {
+            flex: 1;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            font-size: 1.5rem;
+        }
+        .picto-count {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+            color: var(--primary-orange);
+        }
+
+        .highlight-box {
+            background: #fff7ed;
+            border-left: 5px solid var(--primary-orange);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 700px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Guía 17: Representación de Gráficas</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📊📈</div>
+                    <h1>Representación e Interpretación de Gráficas</h1>
+                    <h2>Lección 17 &bull; 4&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende a transformar tablas de datos en dibujos llenos de color y a descubrir sus secretos!</p>
+                </div>
+
+                <!-- 2. ¿Qué es una gráfica? -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🧐</div>
+                    <h2>¿Qué es una Gráfica?</h2>
+                    <p>Una <strong>gráfica</strong> es un dibujo que sirve para representar datos de forma visual. Nos permite entender toda la información rápidamente sin tener que leer una larga lista de números.</p>
+                    <div class="info-card">
+                        <p style="font-size: 1.1rem; margin-bottom: 5px; font-weight: bold; color: var(--primary-blue-dark);">¡Una imagen vale más que mil números!</p>
+                        <p style="font-size: 1rem; color: #4b5563;">Al mirar una gráfica podemos saber al instante cuál es el valor más grande, cuál es el más pequeño o cómo cambian las cosas con el tiempo.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Diagrama de Barras (Explicación) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">📊</div>
+                    <h2>El Diagrama de Barras</h2>
+                    <p>El <strong>diagrama de barras</strong> usa rectángulos (barras) para comparar cantidades de diferentes categorías.</p>
+                    <div class="highlight-box">
+                        <ul style="margin-left: 20px; line-height: 1.6; font-size: 1rem;">
+                            <li><strong>Eje Horizontal (X)</strong>: Aquí se colocan las categorías (colores, juegos, frutas).</li>
+                            <li><strong>Eje Vertical (Y)</strong>: Tiene una escala numérica que indica la cantidad o frecuencia.</li>
+                            <li><strong>La altura de la barra</strong>: Muestra el valor de cada categoría. ¡Entre más alta sea la barra, mayor es su valor!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 4. Diagrama de Barras (Interactivo) -->
+                <div class="slide">
+                    <h2>¡Vota y Construye la Gráfica!</h2>
+                    <p>Haz clic en los botones para votar por el juguete preferido de la clase y mira cómo crece el diagrama de barras SVG automáticamente.</p>
+                    
+                    <div style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: center; width: 100%; max-width: 800px; margin-top: 10px;">
+                        <!-- Controles de Voto -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; width: 220px; text-align: left;">
+                            <button onclick="votarJuguete(0)" style="background: #3b82f6; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;">🚗 Carrito (+1)</button>
+                            <button onclick="votarJuguete(1)" style="background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;">⚽ Pelota (+1)</button>
+                            <button onclick="votarJuguete(2)" style="background: #10b981; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;">🧸 Oso (+1)</button>
+                            <button onclick="reiniciarVotos()" style="background: #64748b; color: white; border: none; padding: 6px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; margin-top: 5px;">🔄 Reiniciar</button>
+                        </div>
+
+                        <!-- Gráfica SVG -->
+                        <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 20px 5px 20px;">
+                            <svg width="400" height="240" id="grafica-barras">
+                                <!-- Grid Lines -->
+                                <line x1="50" y1="40" x2="380" y2="40" class="grid-line" />
+                                <line x1="50" y1="90" x2="380" y2="90" class="grid-line" />
+                                <line x1="50" y1="140" x2="380" y2="140" class="grid-line" />
+                                <line x1="50" y1="190" x2="380" y2="190" class="grid-line" />
+
+                                <!-- Y Axis Labels -->
+                                <text x="35" y="45" font-family="Inter" font-size="11" fill="#64748b" text-anchor="end">15</text>
+                                <text x="35" y="95" font-family="Inter" font-size="11" fill="#64748b" text-anchor="end">10</text>
+                                <text x="35" y="145" font-family="Inter" font-size="11" fill="#64748b" text-anchor="end">5</text>
+                                <text x="35" y="195" font-family="Inter" font-size="11" fill="#64748b" text-anchor="end">0</text>
+
+                                <!-- Axes -->
+                                <line x1="50" y1="30" x2="50" y2="190" stroke="#94a3b8" stroke-width="2" />
+                                <line x1="50" y1="190" x2="380" y2="190" stroke="#94a3b8" stroke-width="2" />
+
+                                <!-- Bars (Initial heights based on default values) -->
+                                <!-- Base height is Y=190, max value 15 corresponds to height 150 pixels (so 10px per vote) -->
+                                <rect x="90" y="140" width="50" height="50" fill="#3b82f6" rx="4" class="bar" id="bar-carro" onclick="votarJuguete(0)" />
+                                <rect x="180" y="110" width="50" height="80" fill="#ef4444" rx="4" class="bar" id="bar-pelota" onclick="votarJuguete(1)" />
+                                <rect x="270" y="160" width="50" height="30" fill="#10b981" rx="4" class="bar" id="bar-oso" onclick="votarJuguete(2)" />
+
+                                <!-- Values on top of bars -->
+                                <text x="115" y="130" class="graph-value" id="val-carro">5</text>
+                                <text x="205" y="100" class="graph-value" id="val-pelota">8</text>
+                                <text x="295" y="150" class="graph-value" id="val-oso">3</text>
+
+                                <!-- X Axis Labels -->
+                                <text x="115" y="212" class="graph-label">🚗 Carrito</text>
+                                <text x="205" y="212" class="graph-label">⚽ Pelota</text>
+                                <text x="295" y="212" class="graph-label">🧸 Oso</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Pictogramas (Explicación) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🌲</div>
+                    <h2>¿Qué es un Pictograma?</h2>
+                    <p>Un <strong>pictograma</strong> es una gráfica que utiliza dibujos o íconos para representar cantidades de datos. ¡Es muy divertido porque los dibujos tienen relación con el tema!</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #fffcf2; border: 2px dashed #f59e0b; padding: 15px;">
+                        <h3 style="color: #d97706; margin-bottom: 8px; font-size: 1.25rem;">⚠️ La Clave o Escala: ¡La regla más importante!</h3>
+                        <p style="font-size: 1rem; color: #5c3e0d; line-height: 1.5;">En un pictograma, un solo dibujo no siempre representa "1". A veces representa 2, 5, 10 o más elementos. A esto le llamamos <strong>Clave</strong>.</p>
+                        <p style="font-size: 1.05rem; font-weight: bold; color: var(--primary-blue-dark); margin-top: 8px; text-align: center;">Ejemplo: 🌳 = 10 árboles sembrados</p>
+                    </div>
+                </div>
+
+                <!-- 6. Pictogramas (Ejemplo Interactivo) -->
+                <div class="slide">
+                    <h2>Ejemplo de Pictograma</h2>
+                    <p>Mira esta gráfica de árboles sembrados en tres escuelas. Recuerda que la clave es: <strong>🌳 = 10 árboles</strong></p>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 10px;">
+                        <div class="picto-row">
+                            <span class="picto-label">Escuela A</span>
+                            <div class="picto-icons">🌳 🌳 🌳</div>
+                            <span class="picto-count" id="count-escA">30 árboles</span>
+                        </div>
+                        <div class="picto-row">
+                            <span class="picto-label">Escuela B</span>
+                            <div class="picto-icons">🌳 🌳 🌳 🌳 🌳</div>
+                            <span class="picto-count" id="count-escB">50 árboles</span>
+                        </div>
+                        <div class="picto-row">
+                            <span class="picto-label">Escuela C</span>
+                            <div class="picto-icons">🌳 🌳</div>
+                            <span class="picto-count" id="count-escC">20 árboles</span>
+                        </div>
+                        
+                        <div style="margin-top: 15px; font-size: 1.05rem; background: #f0fdf4; color: #166534; padding: 8px 20px; border-radius: 20px; font-weight: bold; border: 1px solid #bbf7d0;">
+                            ¿Cómo se calcula? Multiplicamos los íconos por la clave (Ejemplo Escuela A: 3 × 10 = 30)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Gráfica de Líneas -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">📈</div>
+                    <h2>Gráfica de Líneas</h2>
+                    <p>Las <strong>gráficas de líneas</strong> muestran cómo cambian los datos a lo largo del tiempo. Unimos los puntos con líneas para ver tendencias (si sube, baja o se mantiene igual).</p>
+                    
+                    <div class="info-card" style="padding: 12px; max-width: 600px; background: white; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 0.95rem; font-weight: bold; color: var(--primary-blue-dark); display: block; margin-bottom: 5px;">Temperatura durante la mañana (°C)</span>
+                        <svg width="350" height="150">
+                            <!-- Axes -->
+                            <line x1="40" y1="20" x2="40" y2="120" stroke="#94a3b8" stroke-width="2"/>
+                            <line x1="40" y1="120" x2="320" y2="120" stroke="#94a3b8" stroke-width="2"/>
+                            
+                            <!-- Points and lines representing 15°C -> 18°C -> 25°C -> 22°C -->
+                            <!-- Values map: 10°C = y=110, 20°C = y=70, 30°C = y=30 -->
+                            <!-- X coordinates: 7:00 (70), 9:00 (150), 11:00 (230), 13:00 (310) -->
+                            <polyline points="70,90 150,78 230,50 310,62" fill="none" stroke="var(--primary-orange)" stroke-width="3" />
+                            
+                            <circle cx="70" cy="90" r="5" fill="var(--primary-blue-dark)"/>
+                            <circle cx="150" cy="78" r="5" fill="var(--primary-blue-dark)"/>
+                            <circle cx="230" cy="50" r="5" fill="var(--primary-blue-dark)"/>
+                            <circle cx="310" cy="62" r="5" fill="var(--primary-blue-dark)"/>
+
+                            <!-- Values -->
+                            <text x="70" y="78" font-family="Inter" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">15°C</text>
+                            <text x="150" y="66" font-family="Inter" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">18°C</text>
+                            <text x="230" y="38" font-family="Inter" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">25°C</text>
+                            <text x="310" y="50" font-family="Inter" font-size="10" font-weight="bold" fill="#334155" text-anchor="middle">22°C</text>
+                            
+                            <!-- Labels -->
+                            <text x="70" y="135" font-family="Inter" font-size="9" fill="#64748b" text-anchor="middle">7:00 AM</text>
+                            <text x="150" y="135" font-family="Inter" font-size="9" fill="#64748b" text-anchor="middle">9:00 AM</text>
+                            <text x="230" y="135" font-family="Inter" font-size="9" fill="#64748b" text-anchor="middle">11:00 AM</text>
+                            <text x="310" y="135" font-family="Inter" font-size="9" fill="#64748b" text-anchor="middle">1:00 PM</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 8. Interpretación -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🔍</div>
+                    <h2>¿Cómo Interpretamos una Gráfica?</h2>
+                    <p>Interpretar es responder preguntas analizando la información visual. Podemos buscar:</p>
+                    <div class="info-card" style="text-align: left; padding: 20px;">
+                        <ul style="list-style: none; line-height: 1.8; font-size: 1.05rem;">
+                            <li>🌟 <strong style="color: var(--primary-orange);">El Mayor Valor:</strong> La barra más alta, la línea en su punto máximo o la fila con más dibujos.</li>
+                            <li>📉 <strong style="color: var(--primary-blue-dark);">El Menor Valor:</strong> La barra más baja, el punto inferior o menos dibujos.</li>
+                            <li>➕ <strong style="color: var(--primary-green);">El Total:</strong> Sumando las cantidades de todas las categorías.</li>
+                            <li>↔️ <strong style="color: var(--primary-purple);">Diferencias:</strong> Restando una categoría de otra para comparar.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto de Barras</h2>
+                    <p>Observa la gráfica de juguetes que hicimos al inicio (Carrito = 5, Pelota = 8, Oso = 3).</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántos juguetes hay en total en la gráfica?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Intenta sumar las tres cantidades de nuevo: 5 + 8 + 3.')">A)
+                            13 juguetes</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Sumamos: 5 + 8 + 3 = 16 juguetes en total.', '')">B)
+                            16 juguetes</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Ese es solo el valor del juguete favorito (la pelota).')">C)
+                            8 juguetes</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Reto de Pictograma</h2>
+                    <p>En el pictograma de árboles sembrados (Clave: 🌳 = 10 árboles):</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">Si la Escuela B tiene 5 dibujos de árboles (🌳 🌳 🌳 🌳 🌳), ¿cuántos árboles sembró realmente?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Recuerda que cada dibujo 🌳 vale por 10 árboles, no por 1.')">A)
+                            5 árboles</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Multiplica 5 por la clave que es 10.')">B)
+                            15 árboles</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Perfecto! 5 dibujos por 10 árboles cada uno es igual a 50 árboles (5 × 10 = 50).', '')">C)
+                            50 árboles</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 11. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto leyendo e interpretando gráficas y pictogramas!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 11</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Interactive Graph Logic
+        let votos = [5, 8, 3]; // Carro, Pelota, Oso
+        const maxVotos = 15;
+        const maxBarHeight = 150; // pixels corresponding to 15 votes
+
+        function votarJuguete(index) {
+            if (votos[index] < maxVotos) {
+                votos[index]++;
+                actualizarGrafica();
+            }
+        }
+
+        function reiniciarVotos() {
+            votos = [5, 8, 3];
+            actualizarGrafica();
+        }
+
+        function actualizarGrafica() {
+            const ids = ['carro', 'pelota', 'oso'];
+            
+            for (let i = 0; i < 3; i++) {
+                const count = votos[i];
+                const barHeight = (count / maxVotos) * maxBarHeight;
+                const barY = 190 - barHeight;
+                
+                const barElement = document.getElementById(`bar-${ids[i]}`);
+                const valElement = document.getElementById(`val-${ids[i]}`);
+                
+                barElement.setAttribute('height', barHeight);
+                barElement.setAttribute('y', barY);
+                
+                valElement.innerText = count;
+                valElement.setAttribute('y', barY - 10);
+            }
+        }
+
+        updateGallery();
+    </script>
+</body>
+
+</html>

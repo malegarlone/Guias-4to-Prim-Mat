@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 18: Medidas de Longitud y el Metro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 35px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.6rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.8rem auto;
+        }
+
+        .option-btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Unit Grid */
+        .unit-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 750px;
+        }
+        .unit-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .unit-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-orange);
+        }
+        .unit-abbr {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-orange);
+            margin-bottom: 5px;
+        }
+
+        /* Interactive Machine */
+        .converter-box {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 680px;
+            margin: 10px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .slider {
+            width: 100%;
+            margin: 15px 0;
+            accent-color: var(--primary-orange);
+            cursor: pointer;
+        }
+        
+        /* Tab style buttons */
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            background: white;
+            border: 2px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--primary-blue-dark);
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--primary-blue-dark);
+            color: white;
+            border-color: var(--primary-blue-dark);
+        }
+
+        .highlight-box {
+            background: #fff7ed;
+            border-left: 5px solid var(--primary-orange);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 8px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 700px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Guía 18: Medidas de Longitud y el Metro</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📏🛣️</div>
+                    <h1>Medidas de Longitud y sus Equivalencias</h1>
+                    <h2>Lección 18 &bull; 4&deg; Primaria</h2>
+                    
+                    <div class="info-card" style="background: #faf5ff; border: 1.5px solid var(--primary-purple); max-width: 550px; margin-top: 15px;">
+                        <span style="font-weight: bold; color: var(--primary-purple); display: block; margin-bottom: 5px;">🎯 Objetivos de esta lección:</span>
+                        <p style="font-size: 0.95rem; color: #4b5563; margin-bottom: 2px;">1. <strong>Convertir de metros a centímetros</strong> y viceversa.</p>
+                        <p style="font-size: 0.95rem; color: #4b5563;">2. <strong>Convertir de metros a kilómetros</strong> y viceversa.</p>
+                    </div>
+                </div>
+
+                <!-- 2. ¿Qué es la longitud? -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🏃‍♂️</div>
+                    <h2>¿Qué es la Longitud?</h2>
+                    <p>La <strong>longitud</strong> es la distancia que hay entre dos puntos. Nos sirve para saber el largo, ancho o alto de un objeto, o qué tan lejos está un lugar de otro.</p>
+                    <div class="info-card">
+                        <p style="font-size: 1.1rem; color: var(--primary-blue-dark); font-weight: bold;">La Unidad Base: El Metro (m)</p>
+                        <p style="font-size: 0.95rem; color: #475569;">Es el patrón de longitud que usamos todos. Un paso grande de una persona adulta mide aproximadamente 1 metro.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Múltiplos y Submúltiplos del metro -->
+                <div class="slide">
+                    <h2>Múltiplos y Submúltiplos</h2>
+                    <p>Como no todo mide un metro, tenemos unidades para medir cosas diminutas o distancias enormes:</p>
+                    
+                    <div class="unit-grid">
+                        <div class="unit-box" style="border-color: var(--primary-purple);">
+                            <span class="unit-abbr" style="color: var(--primary-purple);">km</span>
+                            <strong>Kilómetro</strong>
+                            <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Unidades grandes.<br><strong>1 km = 1,000 m</strong></p>
+                        </div>
+                        <div class="unit-box" style="background: #fff7ed; border-color: var(--primary-orange);">
+                            <span class="unit-abbr">m</span>
+                            <strong>Metro</strong>
+                            <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Unidad base.<br><strong>1 m = 100 cm</strong></p>
+                        </div>
+                        <div class="unit-box" style="border-color: var(--primary-green);">
+                            <span class="unit-abbr" style="color: var(--primary-green);">cm</span>
+                            <strong>Centímetro</strong>
+                            <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Unidades pequeñas.<br><strong>100 cm = 1 m</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Conversión: Metros y Centímetros -->
+                <div class="slide">
+                    <h2>Conversión: Metros ⇄ Centímetros</h2>
+                    <p>Como <strong>1 metro (m) tiene 100 centímetros (cm)</strong>, pasar de uno a otro es muy fácil:</p>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 750px; margin-top: 15px;">
+                        <div style="flex: 1; background: #f0fdf4; border: 2px solid var(--primary-green); padding: 15px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #166534; font-size: 1.2rem;">➡️ De Metros a Centímetros:</h3>
+                            <p style="font-weight: bold; font-size: 1.25rem; color: var(--primary-blue-dark); margin: 10px 0; text-align: center;">Multiplicamos por 100</p>
+                            <p style="font-size: 0.9rem; color: #166534; font-style: italic; background: white; padding: 6px; border-radius: 6px;">Ejemplo: 4 metros a cm:<br><strong>4 × 100 = 400 cm</strong></p>
+                        </div>
+                        
+                        <div style="flex: 1; background: #eff6ff; border: 2px solid #3b82f6; padding: 15px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #1e40af; font-size: 1.2rem;">⬅️ De Centímetros a Metros:</h3>
+                            <p style="font-weight: bold; font-size: 1.25rem; color: var(--primary-blue-dark); margin: 10px 0; text-align: center;">Dividimos entre 100</p>
+                            <p style="font-size: 0.9rem; color: #1e40af; font-style: italic; background: white; padding: 6px; border-radius: 6px;">Ejemplo: 500 centímetros a m:<br><strong>500 ÷ 100 = 5 m</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4.2. Ejemplo de la Bailerina (Centímetros y Metros) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🩰</div>
+                    <h2>¡Ejemplo Real: El Salto de Ballet!</h2>
+                    <p>Las bailarinas de ballet saltan muy alto. Imagina que una bailerina salta una altura de <strong>80 centímetros (cm)</strong>.</p>
+                    <div class="info-card" style="background: #fff7ed; border: 2px solid var(--primary-orange); text-align: left; max-width: 600px;">
+                        <p style="font-size: 1.05rem; margin-bottom: 8px;"><strong>¿A cuántos metros equivale su salto?</strong></p>
+                        <p style="font-size: 1rem; color: #4b5563; margin-bottom: 8px;">Como convertimos de una unidad pequeña (cm) a una más grande (m), <strong>dividimos entre 100</strong>:</p>
+                        <p style="font-family: monospace; font-size: 1.3rem; font-weight: bold; text-align: center; color: var(--primary-orange);">80 cm ÷ 100 = 0.8 metros (m)</p>
+                        <hr style="border: 1px dashed #cbd5e1; margin: 10px 0;">
+                        <p style="font-size: 1rem; color: #4b5563;">Y si otra bailerina salta <strong>1.2 metros (m)</strong> de altura, para saber cuántos centímetros son, <strong>multiplicamos por 100</strong>:</p>
+                        <p style="font-family: monospace; font-size: 1.3rem; font-weight: bold; text-align: center; color: var(--primary-green);">1.2 m × 100 = 120 centímetros (cm)</p>
+                    </div>
+                </div>
+
+                <!-- 5. Conversión: Metros y Kilómetros -->
+                <div class="slide">
+                    <h2>Conversión: Metros ⇄ Kilómetros</h2>
+                    <p>Como <strong>1 kilómetro (km) tiene 1,000 metros (m)</strong>, la regla de conversión es:</p>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 750px; margin-top: 15px;">
+                        <div style="flex: 1; background: #faf5ff; border: 2px solid var(--primary-purple); padding: 15px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #6b21a8; font-size: 1.2rem;">➡️ De Kilómetros a Metros:</h3>
+                            <p style="font-weight: bold; font-size: 1.25rem; color: var(--primary-blue-dark); margin: 10px 0; text-align: center;">Multiplicamos por 1,000</p>
+                            <p style="font-size: 0.9rem; color: #6b21a8; font-style: italic; background: white; padding: 6px; border-radius: 6px;">Ejemplo: 3 kilómetros a m:<br><strong>3 × 1,000 = 3,000 m</strong></p>
+                        </div>
+                        
+                        <div style="flex: 1; background: #fff7ed; border: 2px solid var(--primary-orange); padding: 15px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #c2410c; font-size: 1.2rem;">⬅️ De Metros a Kilómetros:</h3>
+                            <p style="font-weight: bold; font-size: 1.25rem; color: var(--primary-blue-dark); margin: 10px 0; text-align: center;">Dividimos entre 1,000</p>
+                            <p style="font-size: 0.9rem; color: #c2410c; font-style: italic; background: white; padding: 6px; border-radius: 6px;">Ejemplo: 2,000 metros a km:<br><strong>2,000 ÷ 1,000 = 2 km</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5.2. Ejemplo de Fútbol y Carreras (Metros y Kilómetros) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">⚽🏃‍♂️</div>
+                    <h2>¡Ejemplo Real: Fútbol y Carreras!</h2>
+                    <p>¿Por qué necesitamos los kilómetros? ¡Para medir distancias que recorremos al correr o jugar!</p>
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 750px; margin-top: 10px;">
+                        <div style="flex: 1; background: #eff6ff; border: 2px solid #3b82f6; padding: 12px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #1e40af; font-size: 1.1rem; margin-bottom: 5px;">🏃‍♂️ Una Carrera de 5 km</h3>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 8px;">Si vas a correr en una carrera de <strong>5 kilómetros</strong>, para saber cuántos metros vas a recorrer, multiplicas por 1,000:</p>
+                            <p style="font-family: monospace; font-size: 1.15rem; font-weight: bold; text-align: center; color: #1e40af; background: white; padding: 4px; border-radius: 6px;">5 km × 1,000 = 5,000 m</p>
+                        </div>
+                        <div style="flex: 1; background: #faf5ff; border: 2px solid var(--primary-purple); padding: 12px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #6b21a8; font-size: 1.1rem; margin-bottom: 5px;">⚽ La distancia del Futbolista</h3>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 8px;">En un partido, un futbolista corre unos <strong>10,000 metros</strong>. Para entender esa distancia en kilómetros, dividimos entre 1,000:</p>
+                            <p style="font-family: monospace; font-size: 1.15rem; font-weight: bold; text-align: center; color: #6b21a8; background: white; padding: 4px; border-radius: 6px;">10,000 m ÷ 1,000 = 10 km</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Máquina de Conversiones (Interactiva) -->
+                <div class="slide">
+                    <h2>¡La Máquina de Conversiones!</h2>
+                    <p>Elige el tipo de conversión que deseas explorar, ajusta el deslizador y mira el cálculo matemático realizado:</p>
+                    
+                    <div class="converter-box">
+                        <div class="tab-container">
+                            <button id="tab-m-cm" class="tab-btn active" onclick="cambiarModo('m-cm')">Metros ⇄ Centímetros</button>
+                            <button id="tab-km-m" class="tab-btn" onclick="cambiarModo('km-m')">Kilómetros ⇄ Metros</button>
+                        </div>
+
+                        <!-- Panel de conversión m ⇆ cm -->
+                        <div id="panel-m-cm">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--primary-blue-dark); font-size: 1.2rem;">
+                                <span>Medida: <span id="m-val" style="color: var(--primary-orange);">3.0</span> m</span>
+                                <span style="background: white; padding: 2px 10px; border-radius: 6px; border: 1px solid #ddd;" id="m-cm-math">3.0 × 100 = 300 cm</span>
+                            </div>
+                            <input type="range" min="0" max="10" step="0.5" value="3.0" class="slider" id="slider-m" oninput="actualizarMCm(this.value)">
+                            <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                                <div style="background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid #cbd5e1; width: 45%;">
+                                    <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-blue-dark);" id="val-metros">3.0</span>
+                                    <span style="display:block; font-size:0.85rem; color:#64748b;">Metros (m)</span>
+                                </div>
+                                <div style="background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid var(--primary-green); width: 45%;">
+                                    <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-green);" id="val-cm">300</span>
+                                    <span style="display:block; font-size:0.85rem; color:#64748b;">Centímetros (cm)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel de conversión km ⇆ m -->
+                        <div id="panel-km-m" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--primary-blue-dark); font-size: 1.2rem;">
+                                <span>Medida: <span id="km-val" style="color: var(--primary-orange);">1.5</span> km</span>
+                                <span style="background: white; padding: 2px 10px; border-radius: 6px; border: 1px solid #ddd;" id="km-m-math">1.5 × 1,000 = 1,500 m</span>
+                            </div>
+                            <input type="range" min="0" max="5" step="0.25" value="1.5" class="slider" id="slider-km" oninput="actualizarKmM(this.value)">
+                            <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                                <div style="background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid #cbd5e1; width: 45%;">
+                                    <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-blue-dark);" id="val-km">1.5</span>
+                                    <span style="display:block; font-size:0.85rem; color:#64748b;">Kilómetros (km)</span>
+                                </div>
+                                <div style="background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid var(--primary-purple); width: 45%;">
+                                    <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-purple);" id="val-m">1,500</span>
+                                    <span style="display:block; font-size:0.85rem; color:#64748b;">Metros (m)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto 1: De Metros a Centímetros</h2>
+                    <p>Un escritorio escolar mide <strong>120 centímetros (cm)</strong> de largo.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿A cuántos metros (m) equivale la longitud de este escritorio?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Recuerda que para pasar de cm a metros debemos dividir entre 100. (120 ÷ 100).')">A)
+                            12 metros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Dividimos 120 cm entre 100 y nos da 1.2 metros (1.2 m).', '')">B)
+                            1.2 metros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Si multiplicaras, daría 12,000, pero de cm a metros se divide.')">C)
+                            0.12 metros</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Reto 2: De Kilómetros a Metros</h2>
+                    <p>El autobús escolar recorre una distancia de <strong>4 kilómetros (km)</strong> para llegar al museo.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántos metros (m) recorrió el autobús en total?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Recuerda que 1 km tiene 1,000 metros. Multiplica 4 por 1,000.')">A)
+                            400 metros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'El factor de conversión es 1,000 metros por cada kilómetro.')">B)
+                            40 metros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Perfecto! Como 1 km = 1,000 m, entonces 4 km = 4 × 1,000 = 4,000 metros.', '')">C)
+                            4,000 metros</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto convirtiendo metros, centímetros y kilómetros en ambas direcciones!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 11</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Converter Panel Switch
+        function cambiarModo(modo) {
+            document.getElementById('tab-m-cm').classList.toggle('active', modo === 'm-cm');
+            document.getElementById('tab-km-m').classList.toggle('active', modo === 'km-m');
+            
+            document.getElementById('panel-m-cm').style.display = modo === 'm-cm' ? 'block' : 'none';
+            document.getElementById('panel-km-m').style.display = modo === 'km-m' ? 'block' : 'none';
+        }
+
+        // Calculations
+        function actualizarMCm(val) {
+            const m = parseFloat(val);
+            document.getElementById('m-val').innerText = m.toFixed(1);
+            document.getElementById('val-metros').innerText = m.toFixed(1);
+            
+            const cm = Math.round(m * 100);
+            document.getElementById('val-cm').innerText = cm;
+            
+            document.getElementById('m-cm-math').innerText = `${m.toFixed(1)} m × 100 = ${cm} cm`;
+        }
+
+        function actualizarKmM(val) {
+            const km = parseFloat(val);
+            document.getElementById('km-val').innerText = km.toFixed(2);
+            document.getElementById('val-km').innerText = km.toFixed(2);
+            
+            const m = Math.round(km * 1000);
+            document.getElementById('val-m').innerText = m.toLocaleString('es-GT');
+            
+            document.getElementById('km-m-math').innerText = `${km.toFixed(2)} km × 1,000 = ${m} m`;
+        }
+
+        // Initial setup values
+        actualizarMCm(3.0);
+        actualizarKmM(1.5);
+        updateGallery();
+    </script>
+</body>
+
+</html>
