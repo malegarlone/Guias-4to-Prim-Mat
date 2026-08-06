@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 4: Primer Cuadrante del Plano Cartesiano - 4to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .column-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .widget-slider {
+            flex: 1;
+            margin: 0 15px;
+            accent-color: var(--primary-orange);
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+
+        .step-table {
+            width: 100%;
+            max-width: 820px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 6px auto;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .step-table th {
+            background-color: var(--primary-blue-dark);
+            color: #ffffff;
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .step-table td {
+            padding: 8px 12px;
+            border-bottom: 1px dashed #cbd5e1;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+
+        .step-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .step-col-num {
+            width: 25%;
+            text-align: center;
+            background: #f8fafc;
+            border-right: 2px solid #cbd5e1;
+            font-weight: bold;
+            color: var(--primary-orange);
+        }
+
+        .step-col-desc {
+            width: 75%;
+            text-align: left;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Lección 4: Primer Cuadrante del Plano Cartesiano</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📍🗺️📈</div>
+                        <h1>El Plano Cartesiano</h1>
+                        <h2>Lección 4 &bull; 4&deg; Primaria (Primer Cuadrante)</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende el paso a paso para ubicar cualquier punto, leer pares ordenados (x, y) y trazar los ejes con sus flechas obligatorias!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Partes de un Punto y Cómo se Lee un Par Ordenado -->
+                <div class="slide">
+                    <h2>Anatomía de un Punto: Par Ordenado (x, y)</h2>
+                    <p>Un punto en el plano cartesiano se representa mediante un <strong>par ordenado</strong> encerrado entre paréntesis y separado por una coma.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        
+                        <!-- SVG Desglose del Par Ordenado -->
+                        <svg width="450" height="110" viewBox="0 0 450 110" style="display: block; margin: auto;">
+                            <!-- Nombre del Punto -->
+                            <text x="50" y="65" fill="#244b5a" font-weight="800" font-size="36">P = (</text>
+                            
+                            <!-- Coordenada X -->
+                            <text x="140" y="65" fill="#0284c7" font-weight="800" font-size="42">5</text>
+                            <text x="140" y="100" fill="#0284c7" font-weight="bold" font-size="13" text-anchor="middle">1ª Coordenada X (Horizontal)</text>
+
+                            <text x="210" y="65" fill="#244b5a" font-weight="800" font-size="36">,</text>
+
+                            <!-- Coordenada Y -->
+                            <text x="270" y="65" fill="#db6015" font-weight="800" font-size="42">3</text>
+                            <text x="270" y="100" fill="#db6015" font-weight="bold" font-size="13" text-anchor="middle">2ª Coordenada Y (Vertical)</text>
+
+                            <text x="340" y="65" fill="#244b5a" font-weight="800" font-size="36">)</text>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 18px; margin-top: 10px; width: 100%;">
+                            <h3 style="color: var(--primary-orange); font-size: 1.05rem; margin-bottom: 4px;">📢 ¿Cómo se lee en vos alta?</h3>
+                            <p style="font-size: 1.1rem; font-weight: bold; color: var(--primary-blue-dark); margin: 0;">
+                                "El punto P tiene coordenadas cinco en X, tres en Y" &emsp;o simplemente&emsp; "Punto P igual a cinco coma tres".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Regla Fundamental: Flechas Obligatorias en las Rectas -->
+                <div class="slide">
+                    <h2>Regla de Oro: Flechas en los Ejes</h2>
+                    <p>Al dibujar el plano cartesiano, <strong>¡NUNCA debes olvidar colocar la flecha en la punta de cada recta!</strong></p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="480" height="210" viewBox="0 0 480 210" style="display: block; margin: auto;">
+                            <!-- Eje X con Flecha -->
+                            <line x1="50" y1="160" x2="420" y2="160" stroke="#0284c7" stroke-width="4"/>
+                            <polygon points="435,160 415,152 415,168" fill="#0284c7"/>
+                            <text x="440" y="165" fill="#0284c7" font-weight="bold" font-size="15">Eje X (→ Infinito)</text>
+
+                            <!-- Eje Y con Flecha -->
+                            <line x1="50" y1="160" x2="50" y2="30" stroke="#db6015" stroke-width="4"/>
+                            <polygon points="50,15 42,35 58,35" fill="#db6015"/>
+                            <text x="50" y="10" fill="#db6015" font-weight="bold" font-size="15" text-anchor="middle">Eje Y (↑ Infinito)</text>
+
+                            <!-- Origen -->
+                            <circle cx="50" cy="160" r="6" fill="#244b5a"/>
+                            <text x="35" y="180" fill="#244b5a" font-weight="bold" font-size="14">Origen (0,0)</text>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 1.5px solid var(--primary-green); border-radius: 10px; padding: 8px 16px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.88rem; color: #166534; margin: 0; font-weight: bold;">
+                                💡 ¿Por qué llevas flechas? La flecha indica que las líneas numéricas son infinitas y continúan creciendo hacia la derecha y hacia arriba.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Algoritmo Paso a Paso para Graficar un Punto -->
+                <div class="slide">
+                    <h2>Guía Paso a Paso para Graficar un Punto (x, y)</h2>
+                    <p>Sigue siempre este procedimiento de 4 pasos para ubicar cualquier punto sin equivocarte:</p>
+
+                    <table class="step-table">
+                        <thead>
+                            <tr>
+                                <th class="step-col-num">Paso</th>
+                                <th class="step-col-desc">Procedimiento Instruccional</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="step-col-num">Paso 1: Punto de Partida</td>
+                                <td class="step-col-desc"><strong>Ubícate en el Origen (0,0)</strong>, el lugar exacto donde se cruzan las dos líneas de los ejes.</td>
+                            </tr>
+                            <tr>
+                                <td class="step-col-num" style="color: #0284c7;">Paso 2: Avanzar en X</td>
+                                <td class="step-col-desc">Mira el primer número <strong>x</strong>. Camina horizontalmente hacia la <strong>derecha</strong> esa cantidad de cuadros.</td>
+                            </tr>
+                            <tr>
+                                <td class="step-col-num" style="color: var(--primary-orange);">Paso 3: Subir en Y</td>
+                                <td class="step-col-desc">Desde donde quedaste, mira el segundo número <strong>y</strong>. Sube verticalmente hacia <strong>arriba</strong> esa cantidad de cuadros.</td>
+                            </tr>
+                            <tr>
+                                <td class="step-col-num" style="color: var(--primary-green);">Paso 4: Marcar el Punto</td>
+                                <td class="step-col-desc"><strong>Dibuja un círculo relleno</strong> en la intersección final y escribe su letra mayúscula a la par, ej: <strong>A(4,3)</strong>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 5. Ejemplo 1 Resuelto Paso a Paso: Punto A(2, 4) -->
+                <div class="slide">
+                    <h2>Ejemplo 1: Graficar el Punto A = (2, 4)</h2>
+                    <p style="margin-bottom: 2px;">Localizamos el punto $A(2,4)$ paso a paso en la cuadrícula:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="190" viewBox="0 0 280 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <!-- Ejes -->
+                                    <line x1="40" y1="160" x2="260" y2="160" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="270,160 255,154 255,166" fill="#0284c7"/>
+                                    
+                                    <line x1="40" y1="160" x2="40" y2="25" stroke="#db6015" stroke-width="3"/>
+                                    <polygon points="40,12 34,27 46,27" fill="#db6015"/>
+
+                                    <!-- Recorrido Paso a Paso A(2,4) -->
+                                    <!-- 2 pasos a la derecha (40 -> 120) -->
+                                    <line x1="40" y1="160" x2="120" y2="160" stroke="#0284c7" stroke-width="4"/>
+                                    <!-- 4 pasos arriba (160 -> 40) -->
+                                    <line x1="120" y1="160" x2="120" y2="40" stroke="#db6015" stroke-width="3" stroke-dasharray="4,4"/>
+
+                                    <!-- Punto A(2,4) -->
+                                    <circle cx="120" cy="40" r="7" fill="#22c55e"/>
+                                    <text x="132" y="42" fill="#166534" font-weight="bold" font-size="15">A (2, 4)</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.85rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Inicio:</strong> Nos paramos en (0,0).</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Avance X:</strong> Caminamos <strong>2 cuadros</strong> a la derecha.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Subida Y:</strong> Subimos <strong>4 cuadros</strong> en línea recta.</p>
+                                <p style="margin-bottom: 0; color: #166534; font-weight: bold;">4&deg;) <strong>Marca:</strong> ¡Dibujamos el punto verde A(2,4)!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Ejemplo 2 Resuelto Paso a Paso: Punto B(5, 1) -->
+                <div class="slide">
+                    <h2>Ejemplo 2: Graficar el Punto B = (5, 1)</h2>
+                    <p style="margin-bottom: 2px;">Localizamos el punto $B(5,1)$ paso a paso en la cuadrícula:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="190" viewBox="0 0 280 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <!-- Ejes -->
+                                    <line x1="40" y1="160" x2="260" y2="160" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="270,160 255,154 255,166" fill="#0284c7"/>
+                                    
+                                    <line x1="40" y1="160" x2="40" y2="25" stroke="#db6015" stroke-width="3"/>
+                                    <polygon points="40,12 34,27 46,27" fill="#db6015"/>
+
+                                    <!-- Recorrido Paso a Paso B(5,1) -->
+                                    <!-- 5 pasos a la derecha (40 -> 240) -->
+                                    <line x1="40" y1="160" x2="240" y2="160" stroke="#0284c7" stroke-width="4"/>
+                                    <!-- 1 paso arriba (160 -> 130) -->
+                                    <line x1="240" y1="160" x2="240" y2="130" stroke="#db6015" stroke-width="3" stroke-dasharray="4,4"/>
+
+                                    <!-- Punto B(5,1) -->
+                                    <circle cx="240" cy="130" r="7" fill="#8b5cf6"/>
+                                    <text x="248" y="125" fill="#6b21a8" font-weight="bold" font-size="15">B (5, 1)</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.85rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Inicio:</strong> Nos paramos en el origen (0,0).</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Avance X:</strong> Avanzamos <strong>5 cuadros</strong> largos a la derecha.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Subida Y:</strong> Subimos <strong>solo 1 cuadro</strong> hacia arriba.</p>
+                                <p style="margin-bottom: 0; color: #6b21a8; font-weight: bold;">4&deg;) <strong>Marca:</strong> ¡Dibujamos el punto morado B(5,1)!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Ejemplo 3 Resuelto Paso a Paso: Punto C(0, 3) -->
+                <div class="slide">
+                    <h2>Ejemplo 3: Graficar Punto sobre el Eje C = (0, 3)</h2>
+                    <p style="margin-bottom: 2px;">Localizamos un punto especial $C(0,3)$ con coordenada $X = 0$:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="190" viewBox="0 0 280 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <!-- Ejes -->
+                                    <line x1="40" y1="160" x2="260" y2="160" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="270,160 255,154 255,166" fill="#0284c7"/>
+                                    
+                                    <line x1="40" y1="160" x2="40" y2="25" stroke="#db6015" stroke-width="3"/>
+                                    <polygon points="40,12 34,27 46,27" fill="#db6015"/>
+
+                                    <!-- Recorrido Paso a Paso C(0,3) -->
+                                    <!-- 0 pasos a la derecha -> Nos quedamos en 40 -->
+                                    <!-- 3 pasos arriba sobre el mismo Eje Y (160 -> 70) -->
+                                    <line x1="40" y1="160" x2="40" y2="70" stroke="#db6015" stroke-width="4"/>
+
+                                    <!-- Punto C(0,3) sobre el eje -->
+                                    <circle cx="40" cy="70" r="7" fill="#db6015"/>
+                                    <text x="52" y="75" fill="#b45309" font-weight="bold" font-size="15">C (0, 3)</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.85rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Inicio:</strong> Nos paramos en (0,0).</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Avance X:</strong> Como $X = 0$, ¡no caminamos nada a la derecha!</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Subida Y:</strong> Subimos <strong>3 cuadros</strong> sobre la misma línea del Eje Y.</p>
+                                <p style="margin-bottom: 0; color: #b45309; font-weight: bold;">4&deg;) <strong>Marca:</strong> ¡El punto C(0,3) queda sobre el mismo Eje Y!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Simulador Interactivo del Plano Cartesiano -->
+                <div class="slide">
+                    <h2>¡Simulador Interactivo de Coordenadas (x, y)!</h2>
+                    <p>Mueve los controles para ver el recorrido paso a paso del punto sobre los ejes con sus flechas:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 18px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
+                            <div style="flex: 1.1; max-width: 380px;">
+                                <svg width="340" height="200" viewBox="0 0 340 200" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                    <!-- Ejes con Flechas -->
+                                    <line x1="40" y1="170" x2="310" y2="170" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="322,170 308,164 308,176" fill="#0284c7"/>
+                                    
+                                    <line x1="40" y1="170" x2="40" y2="25" stroke="#db6015" stroke-width="3"/>
+                                    <polygon points="40,12 34,27 46,27" fill="#db6015"/>
+                                    
+                                    <!-- Marcas de Ejes -->
+                                    <text x="325" y="174" fill="#0284c7" font-weight="bold" font-size="11">X (→)</text>
+                                    <text x="40" y="8" fill="#db6015" font-weight="bold" font-size="11" text-anchor="middle">Y (↑)</text>
+
+                                    <!-- Punto móvil P(x,y) -->
+                                    <circle id="sim-dot" cx="175" cy="95" r="7" fill="#db6015"/>
+                                    <line id="line-x" x1="175" y1="170" x2="175" y2="95" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="2"/>
+                                    <line id="line-y" x1="40" y1="95" x2="175" y2="95" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="2"/>
+                                </svg>
+                            </div>
+
+                            <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                <div style="background: #f1f5f9; padding: 8px 12px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-weight: bold; color: #0284c7; font-size: 0.82rem; display: block;">1º Pasos Derecha en X:</label>
+                                    <input type="range" min="0" max="6" value="3" step="1" class="widget-slider" id="x-slider" style="width: 100%; accent-color: #0284c7;" oninput="simularPunto()">
+                                </div>
+
+                                <div style="background: #f1f5f9; padding: 8px 12px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-weight: bold; color: var(--primary-orange); font-size: 0.82rem; display: block;">2º Pasos Arriba en Y:</label>
+                                    <input type="range" min="0" max="6" value="3" step="1" class="widget-slider" id="y-slider" style="width: 100%; accent-color: var(--primary-orange);" oninput="simularPunto()">
+                                </div>
+
+                                <div style="background: #fffbeb; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--primary-orange);">
+                                    <span style="font-size: 0.75rem; color: var(--primary-orange); font-weight: bold;">PAR ORDENADO RESULTANTE:</span>
+                                    <span id="res-coord" style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark); display: block;">Punto P = ( 3 , 3 )</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Lectura de un Par Ordenado</h2>
+                        <p>Al ver las coordenadas <strong>M = (4, 1)</strong>...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cómo se debe leer e interpretar correctamente este punto?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Se lee: Punto M con cuatro en X (horizontal) y uno en Y (vertical).', '')">A) Punto M igual a cuatro en X, uno en Y.</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'El primer número siempre indica el avance en el Eje X horizontal.')">B) Punto M igual a uno en X, cuatro en Y.</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Recuerda que la X se lee primero y la Y segundo.')">C) Punto M igual a cuatro en Y, uno en X.</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Regla de los Ejes</h2>
+                        <p>Al dibujar los ejes X e Y en el plano cartesiano, ¿qué elemento es <strong>obligatorio dibujar en las puntas de las líneas</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Las flechas en las puntas son obligatorias porque indican que los ejes son infinitos.', '')">A) Flechas en las puntas para indicar que son infinitas.</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Las flechas son obligatorias para mostrar la dirección infinita.')">B) Cuadrados cerrados para limitar la gráfica.</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Las líneas rectas del plano siempre llevan flechas.')">C) No se coloca ningún símbolo especial.</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 11. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Ubicación de Puntos con Cero</h2>
+                        <p>Si quieres graficar el punto <strong>K = (0, 5)</strong> en el plano cartesiano...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Dónde queda ubicado este punto?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! Como X=0, no avanza a la derecha y queda directamente sobre el Eje Y vertical.', '')">A) Directamente sobre la línea del Eje Y vertical.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Sobre el Eje X estaría si Y fuera igual a cero.')">B) Directamente sobre la línea del Eje X horizontal.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'El punto de origen es (0,0).')">C) Exactamente en el Origen (0,0).</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 12. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has aprendido la guía paso a paso para ubicar puntos en el plano cartesiano!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 12</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 12;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function simularPunto() {
+            const x = parseInt(document.getElementById('x-slider').value);
+            const y = parseInt(document.getElementById('y-slider').value);
+
+            document.getElementById('res-coord').textContent = `Punto P = ( ${x} , ${y} )`;
+
+            const cx = 40 + (x * 45);
+            const cy = 170 - (y * 25);
+
+            const dot = document.getElementById('sim-dot');
+            const lineX = document.getElementById('line-x');
+            const lineY = document.getElementById('line-y');
+
+            if (dot && lineX && lineY) {
+                dot.setAttribute('cx', cx);
+                dot.setAttribute('cy', cy);
+
+                lineX.setAttribute('x1', cx);
+                lineX.setAttribute('x2', cx);
+                lineX.setAttribute('y2', cy);
+
+                lineY.setAttribute('y1', cy);
+                lineY.setAttribute('x2', cx);
+                lineY.setAttribute('y2', cy);
+            }
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>

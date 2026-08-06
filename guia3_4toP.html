@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 3: Clasificación, Simetría, Perímetro y Área de Figuras Geométricas - 4to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+
+        /* Botones Interactivos Divertidos (Reemplazo de Deslizador) */
+        .interactive-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(219, 96, 21, 0.3);
+            background: #c4500e;
+        }
+
+        .preset-btn {
+            background: #ffffff;
+            color: var(--primary-blue-dark);
+            border: 2px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: #0284c7;
+            background: #f0f9ff;
+            color: #0284c7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Lección 3: Simetría, Perímetro y Área</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🦋📏🔳</div>
+                        <h1>Simetría, Perímetro y Área</h1>
+                        <h2>Lección 3 &bull; 4&deg; Primaria</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Descubre todos los tipos de simetría, la forma de medir contornos (perímetro) y la superficie interior (área)!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Simetría por Eje Central (Simetría Axial) -->
+                <div class="slide">
+                    <h2>1. Simetría por Eje Central (Axial)</h2>
+                    <p>Ocurre cuando una <strong>línea recta vertical u horizontal (eje)</strong> actúa como un espejo. ¡Si doblas la figura por la mitad, las dos partes encajan perfectamente!</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="540" height="220" viewBox="0 0 540 220" style="display: block; margin: auto;">
+                            <!-- Corazón / Hoja Simétrica Ancha -->
+                            <!-- Lado Izquierdo -->
+                            <path d="M 270,45 Q 160,15 110,80 Q 70,140 270,210 Z" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <circle cx="150" cy="95" r="15" fill="#f7be00"/>
+                            
+                            <!-- Lado Derecho (Reflejo Espejo Exacto) -->
+                            <path d="M 270,45 Q 380,15 430,80 Q 470,140 270,210 Z" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <circle cx="390" cy="95" r="15" fill="#f7be00"/>
+
+                            <!-- Eje Central Vertical de Simetría -->
+                            <line x1="270" y1="10" x2="270" y2="218" stroke="#8b5cf6" stroke-width="3.5" stroke-dasharray="8,5"/>
+                            <text x="280" y="25" fill="#8b5cf6" font-weight="bold" font-size="14">Eje Central (Espejo)</text>
+
+                            <!-- Línea Guía de Distancia Horizontal -->
+                            <line x1="150" y1="95" x2="390" y2="95" stroke="#0284c7" stroke-dasharray="4,4" stroke-width="2.5"/>
+
+                            <!-- Etiquetas de Distancia perfectamente separadas a la izquierda y derecha -->
+                            <text x="195" y="85" fill="#0284c7" font-weight="bold" font-size="13" text-anchor="middle">Misma distancia</text>
+                            <text x="345" y="85" fill="#0284c7" font-weight="bold" font-size="13" text-anchor="middle">Misma distancia</text>
+                        </svg>
+
+                        <div style="background: #f0f9ff; border: 1.5px solid #0284c7; border-radius: 10px; padding: 8px 16px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.88rem; color: #0369a1; margin: 0; font-weight: bold;">
+                                💡 Ejemplo de Primaria: Al doblar una hoja decorada por la línea del centro, cada punto de la izquierda toca exactamente su punto correspondiente de la derecha.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Simetría Central (Por un Punto Central) -->
+                <div class="slide">
+                    <h2>2. Simetría por un Punto Central</h2>
+                    <p>Ocurre cuando la figura gira 180&deg; alrededor de un <strong>punto central constante</strong>. ¡Es como poner la figura de cabeza pero manteniendo sus medidas intactas!</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="480" height="210" viewBox="0 0 480 210" style="display: block; margin: auto;">
+                            <!-- Figura Original (Triángulo Izquierda Arriba) -->
+                            <polygon points="80,35 160,35 120,95" fill="#f0fdf4" stroke="#22c55e" stroke-width="3"/>
+                            <text x="110" y="26" fill="#22c55e" font-weight="bold" font-size="14">Figura Original</text>
+
+                            <!-- Punto Central de Simetría -->
+                            <circle cx="240" cy="110" r="7" fill="#db6015"/>
+                            <text x="240" y="132" fill="#db6015" font-weight="bold" font-size="14" text-anchor="middle">Punto Central (P)</text>
+
+                            <!-- Líneas de Simetría cruzando por el Punto Central -->
+                            <line x1="80" y1="35" x2="400" y2="185" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="2"/>
+                            <line x1="160" y1="35" x2="320" y2="185" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="2"/>
+
+                            <!-- Figura Simétrica Invertida (Derecha Abajo) -->
+                            <polygon points="400,185 320,185 360,125" fill="#f0fdf4" stroke="#22c55e" stroke-width="3"/>
+                            <text x="330" y="204" fill="#22c55e" font-weight="bold" font-size="14">Reflejo Invertido (180&deg;)</text>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 1.5px solid var(--primary-orange); border-radius: 10px; padding: 8px 16px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.88rem; color: #b45309; margin: 0; font-weight: bold;">
+                                💡 Ejemplo de Primaria: Si trazas una línea desde cada esquina de la figura pasando por el punto del centro, llegarás a la esquina opuesta a la misma distancia.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Simetría por un Vértice Compartido -->
+                <div class="slide">
+                    <h2>3. Simetría por un Vértice (Esquina)</h2>
+                    <p>Se forma cuando dos figuras idénticas comparten únicamente un <strong>único punto en común: su vértice</strong>, proyectándose en direcciones opuestas como un reloj de arena.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="480" height="210" viewBox="0 0 480 210" style="display: block; margin: auto;">
+                            <!-- Triángulo Arriba -->
+                            <polygon points="120,20 360,20 240,105" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <text x="240" y="15" fill="#8b5cf6" font-weight="bold" font-size="14" text-anchor="middle">Triángulo 1</text>
+
+                            <!-- Vértice Compartido Central -->
+                            <circle cx="240" cy="105" r="8" fill="#db6015"/>
+                            <text x="255" y="108" fill="#db6015" font-weight="bold" font-size="14">Vértice Compartido</text>
+
+                            <!-- Triángulo Abajo (Simétrico por Vértice) -->
+                            <polygon points="240,105 120,190 360,190" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <text x="240" y="206" fill="#8b5cf6" font-weight="bold" font-size="14" text-anchor="middle">Triángulo 2 (Reflejo por Vértice)</text>
+                        </svg>
+
+                        <div style="background: #f3e8ff; border: 1.5px solid #8b5cf6; border-radius: 10px; padding: 8px 16px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.88rem; color: #6b21a8; margin: 0; font-weight: bold;">
+                                💡 Ejemplo de Primaria: Es la figura clásica del reloj de arena o moño de corbata, donde los dos triángulos coinciden punta con punta.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Simetría en el Plano Cartesiano (Eje X y Eje Y) -->
+                <div class="slide">
+                    <h2>4. Simetría en el Plano Cartesiano</h2>
+                    <p>En la cuadrícula, los <strong>Ejes X e Y</strong> funcionan como espejos perfectos. Si una figura está en un cuadrante, su reflejo mantiene la misma distancia al eje.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="480" height="210" viewBox="0 0 480 210" style="display: block; margin: auto;">
+                            <!-- Ejes Cartesianos -->
+                            <line x1="40" y1="105" x2="440" y2="105" stroke="#0284c7" stroke-width="3"/>
+                            <line x1="240" y1="15" x2="240" y2="195" stroke="#db6015" stroke-width="3"/>
+                            <text x="442" y="109" fill="#0284c7" font-weight="bold" font-size="13">Eje X (Espejo)</text>
+                            <text x="240" y="10" fill="#db6015" font-weight="bold" font-size="13" text-anchor="middle">Eje Y (Espejo)</text>
+
+                            <!-- Cuadrado Original (Arriba Derecha) -->
+                            <rect x="270" y="30" width="55" height="55" fill="#f0f9ff" stroke="#0284c7" stroke-width="3"/>
+                            <text x="297" y="62" fill="#0284c7" font-weight="bold" font-size="12" text-anchor="middle">Original A</text>
+
+                            <!-- Simetría respecto al Eje Y (Arriba Izquierda) -->
+                            <rect x="155" y="30" width="55" height="55" fill="#fffbeb" stroke="#db6015" stroke-width="3"/>
+                            <text x="182" y="62" fill="#db6015" font-weight="bold" font-size="12" text-anchor="middle">Reflejo Y</text>
+
+                            <!-- Simetría respecto al Eje X (Abajo Derecha) -->
+                            <rect x="270" y="125" width="55" height="55" fill="#f0fdf4" stroke="#22c55e" stroke-width="3"/>
+                            <text x="297" y="157" fill="#22c55e" font-weight="bold" font-size="12" text-anchor="middle">Reflejo X</text>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 1.5px solid var(--primary-green); border-radius: 10px; padding: 8px 16px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.88rem; color: #166534; margin: 0; font-weight: bold;">
+                                💡 Ejemplo de Primaria: Si cuentas 3 cuadros a la derecha del Eje Y para dibujar un cuadrado, su reflejo simétrico estará a 3 cuadros exactos a la izquierda.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Perímetro de Figuras Geométricas -->
+                <div class="slide">
+                    <h2>¿Qué es el Perímetro? (Contorno)</h2>
+                    <p>El <strong>perímetro</strong> es la <u>suma de todos los lados de una figura</u>. Imagina que colocas una cinta de medir alrededor de todo su borde o cerco.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="520" height="190" viewBox="0 0 520 190" style="display: block; margin: auto;">
+                            <!-- Rectángulo Espacioso -->
+                            <rect x="70" y="30" width="380" height="110" fill="#f0f9ff" stroke="#0284c7" stroke-width="4"/>
+                            
+                            <!-- Medidas en cada lado con formato limpio -->
+                            <text x="260" y="22" fill="#0284c7" font-weight="bold" font-size="16" text-anchor="middle">Base Superior = 10 cm</text>
+                            <text x="260" y="165" fill="#0284c7" font-weight="bold" font-size="16" text-anchor="middle">Base Inferior = 10 cm</text>
+                            <text x="15" y="90" fill="#0284c7" font-weight="bold" font-size="16">5 cm</text>
+                            <text x="462" y="90" fill="#0284c7" font-weight="bold" font-size="16">5 cm</text>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark); margin: 0;">
+                                Fórmula del Perímetro: P = 10 + 5 + 10 + 5 = 30 cm
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Área de Figuras Geométricas -->
+                <div class="slide">
+                    <h2>¿Qué es el Área? (Superficie Interior)</h2>
+                    <p>El <strong>área</strong> es la cantidad de cuadros de <strong>1 cm&sup2;</strong> que caben dentro de la figura. ¡Se pueden contar uno por uno!</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        <svg width="540" height="210" viewBox="0 0 540 210" style="display: block; margin: auto;">
+                            <!-- Rectángulo de Base = 4 cm (320px) y Altura = 2 cm (120px) -->
+                            <rect x="110" y="40" width="320" height="120" fill="#f0fdf4" stroke="#22c55e" stroke-width="4"/>
+
+                            <!-- Malla de Cuadrícula 4 Columnas x 2 Filas (8 Cuadritos de 80x60 px cada uno) -->
+                            <g stroke="#86efac" stroke-width="2" stroke-dasharray="4,2">
+                                <!-- Línea horizontal del centro -->
+                                <line x1="110" y1="100" x2="430" y2="100"/>
+                                <!-- 3 Líneas verticales interiores -->
+                                <line x1="190" y1="40" x2="190" y2="160"/>
+                                <line x1="270" y1="40" x2="270" y2="160"/>
+                                <line x1="350" y1="40" x2="350" y2="160"/>
+                            </g>
+
+                            <!-- Números en cada cuadrito para que los niños cuenten del 1 al 8 -->
+                            <!-- Fila 1 (Arriba) -->
+                            <text x="150" y="75" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">1</text>
+                            <text x="230" y="75" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">2</text>
+                            <text x="310" y="75" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">3</text>
+                            <text x="390" y="75" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">4</text>
+                            
+                            <!-- Fila 2 (Abajo) -->
+                            <text x="150" y="135" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">5</text>
+                            <text x="230" y="135" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">6</text>
+                            <text x="310" y="135" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">7</text>
+                            <text x="390" y="135" fill="#15803d" font-weight="bold" font-size="20" text-anchor="middle">8</text>
+
+                            <!-- Etiquetas Exteriores Despejadas -->
+                            <text x="270" y="25" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">Base = 4 cm (4 cuadros)</text>
+                            <text x="15" y="105" fill="#166534" font-weight="bold" font-size="16">Altura = 2 cm</text>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 2px solid var(--primary-green); border-radius: 12px; padding: 10px 20px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: #166534; margin: 0;">
+                                Fórmula del Área: Área = Base &times; Altura = 4 &times; 2 = 8 cm&sup2; (8 cuadritos en total)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Laboratorio Interactivo de Perímetro y Área (Sin Deslizadores) -->
+                <div class="slide">
+                    <h2>¡Laboratorio de Construcción de Figuras!</h2>
+                    <p>Usa los botones dinámicos para agrandar o achicar el rectángulo y ver cómo cambia el contorno (Perímetro) y la superficie (Área):</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 18px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
+                        
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
+                            
+                            <!-- Gráfica SVG Reactiva -->
+                            <div style="flex: 1.1; max-width: 400px;">
+                                <svg width="360" height="200" viewBox="0 0 360 200" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                    <rect id="sim-rect" x="80" y="50" width="200" height="100" fill="#f0f9ff" stroke="#0284c7" stroke-width="3"/>
+                                    <text id="lbl-b" x="180" y="32" fill="#0284c7" font-weight="bold" font-size="14" text-anchor="middle">Base = 6 cm</text>
+                                    <text id="lbl-h" x="55" y="105" fill="#0284c7" font-weight="bold" font-size="14" text-anchor="end">4 cm</text>
+                                </svg>
+                            </div>
+
+                            <!-- Panel de Botones Interactivos de 1 Clic -->
+                            <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                
+                                <!-- Controles de Base -->
+                                <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <span style="font-weight: bold; color: var(--primary-blue-dark); font-size: 0.8rem; display: block; margin-bottom: 3px;">Ancho (Base):</span>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="interactive-btn" onclick="adjustDimension('b', -1)">- 1 cm</button>
+                                        <button class="interactive-btn" onclick="adjustDimension('b', 1)">+ 1 cm</button>
+                                    </div>
+                                </div>
+
+                                <!-- Controles de Altura -->
+                                <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <span style="font-weight: bold; color: var(--primary-blue-dark); font-size: 0.8rem; display: block; margin-bottom: 3px;">Alto (Altura):</span>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="interactive-btn" style="background: #0284c7;" onclick="adjustDimension('h', -1)">- 1 cm</button>
+                                        <button class="interactive-btn" style="background: #0284c7;" onclick="adjustDimension('h', 1)">+ 1 cm</button>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de Figuras Preestablecidas -->
+                                <div style="display: flex; gap: 4px;">
+                                    <button class="preset-btn" onclick="setPreset(4, 4)">Cuadrado (4x4)</button>
+                                    <button class="preset-btn" onclick="setPreset(8, 3)">Rectángulo (8x3)</button>
+                                </div>
+
+                                <!-- Resultados -->
+                                <div style="background: #f0fdf4; padding: 5px 10px; border-radius: 8px; border: 1.5px solid var(--primary-green);">
+                                    <span style="font-size: 0.72rem; color: #166534; font-weight: bold;">PERÍMETRO:</span>
+                                    <span id="res-perim" style="font-size: 1rem; font-weight: bold; color: var(--primary-blue-dark); display: block;">P = 20 cm</span>
+                                </div>
+                                <div style="background: #fffbeb; padding: 5px 10px; border-radius: 8px; border: 1.5px solid var(--primary-orange);">
+                                    <span style="font-size: 0.72rem; color: var(--primary-orange); font-weight: bold;">ÁREA:</span>
+                                    <span id="res-area" style="font-size: 1rem; font-weight: bold; color: var(--primary-orange); display: block;">Área = 24 cm&sup2;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Tipos de Simetría</h2>
+                        <p>Cuando doblamos un dibujo por la mitad con una línea vertical y ambas partes son idénticas...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Qué tipo de simetría estamos observando?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Es Simetría por Eje Central (Axial), actuando como un espejo perfecto.', '')">A) Simetría por Eje Central (Axial)</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'La simetría central gira alrededor de un punto, no de una línea.')">B) Simetría por un Punto Central</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'La simetría por vértice une dos figuras solo en su punta.')">C) Simetría por Vértice</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Cálculo de Área</h2>
+                        <p>Una pared rectangular mide <strong>8 metros de base</strong> y <strong>3 metros de altura</strong>.</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál es el área total de la pared que se debe pintar?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Área = Base x Altura = 8 x 3 = 24 m² de superficie.', '')">A) 24 m&sup2;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', '22 metros es el perímetro (8 + 3 + 8 + 3), no el área.')">B) 22 m&sup2;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Multiplica la base por la altura: 8 x 3.')">C) 11 m&sup2;</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 11. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Perímetro de un Terreno</h2>
+                        <p>Un jardín rectangular mide <strong>6 metros de largo y 4 metros de ancho</strong>.</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántos metros de cerca se necesitan para rodear todo su contorno (perímetro)?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! Perímetro = 6 + 4 + 6 + 4 = 20 metros de cerca.', '')">A) 20 metros</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', '24 m² es la medida de la superficie (área), no el contorno.')">B) 24 metros</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Recuerda sumar los 4 lados del terreno.')">C) 10 metros</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 12. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado todos los tipos de simetría, el perímetro y el área!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 12</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 12;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Estado del Laboratorio Interactivo
+        let curB = 6;
+        let curH = 4;
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function renderInteractiveRect() {
+            document.getElementById('lbl-b').textContent = `Base = ${curB} cm`;
+            document.getElementById('lbl-h').textContent = `${curH} cm`;
+
+            const rect = document.getElementById('sim-rect');
+            if (rect) {
+                const w_px = curB * 24;
+                const h_px = curH * 18;
+                const x_px = 180 - (w_px / 2);
+                const y_px = 100 - (h_px / 2);
+
+                rect.setAttribute('x', x_px);
+                rect.setAttribute('y', y_px);
+                rect.setAttribute('width', w_px);
+                rect.setAttribute('height', h_px);
+            }
+
+            const perim = 2 * (curB + curH);
+            const area = curB * curH;
+
+            document.getElementById('res-perim').textContent = `P = ${perim} cm`;
+            document.getElementById('res-area').textContent = `Área = ${area} cm²`;
+        }
+
+        function adjustDimension(dim, delta) {
+            if (dim === 'b') {
+                curB = Math.max(2, Math.min(10, curB + delta));
+            } else {
+                curH = Math.max(2, Math.min(8, curH + delta));
+            }
+            renderInteractiveRect();
+        }
+
+        function setPreset(b, h) {
+            curB = b;
+            curH = h;
+            renderInteractiveRect();
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+        renderInteractiveRect();
+    </script>
+</body>
+
+</html>

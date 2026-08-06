@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 2: Clasificación de Triángulos y Cuadriláteros - 4to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .column-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 4to Primaria</span>
+            <span>Lección 2: Clasificación de Triángulos y Cuadriláteros</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🔺🟦🔷</div>
+                        <h1>Triángulos y Cuadriláteros</h1>
+                        <h2>Lección 2 &bull; 4&deg; Primaria</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende la clasificación completa de los triángulos por sus lados y ángulos, y descubre la familia de los cuadriláteros con ejemplos gráficos!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Triángulos según la longitud de sus Lados -->
+                <div class="slide">
+                    <h2>1. Triángulos según sus Lados</h2>
+                    <p>Los triángulos se clasifican en 3 grupos según la medida de sus 3 lados:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="560" height="210" viewBox="0 0 560 210" style="display: block; margin: auto;">
+                            <!-- 1. Equilátero -->
+                            <polygon points="100,35 40,150 160,150" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                            <text x="100" y="175" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Equilátero</text>
+                            <text x="100" y="195" fill="#64748b" font-size="12" text-anchor="middle">3 Lados Iguales</text>
+
+                            <!-- 2. Isósceles -->
+                            <polygon points="280,25 230,150 330,150" fill="#f0f9ff" stroke="#0284c7" stroke-width="3.5"/>
+                            <text x="280" y="175" fill="#0369a1" font-weight="bold" font-size="15" text-anchor="middle">Isósceles</text>
+                            <text x="280" y="195" fill="#64748b" font-size="12" text-anchor="middle">2 Lados Iguales</text>
+
+                            <!-- 3. Escaleno -->
+                            <polygon points="430,40 400,150 530,150" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <text x="460" y="175" fill="#b45309" font-weight="bold" font-size="15" text-anchor="middle">Escaleno</text>
+                            <text x="460" y="195" fill="#64748b" font-size="12" text-anchor="middle">3 Lados Diferentes</text>
+                        </svg>
+
+                        <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #334155; margin: 0; font-weight: bold;">
+                                💡 Tip Memorístico: Equilátero = "Equi" (Igualdad total), Isósceles = "2 iguales", Escaleno = "Escalones distintos".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Triángulos según la abertura de sus Ángulos -->
+                <div class="slide">
+                    <h2>2. Triángulos según sus Ángulos</h2>
+                    <p>También se clasifican observando los tipos de ángulos que tienen en su interior:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="560" height="210" viewBox="0 0 560 210" style="display: block; margin: auto;">
+                            <!-- 1. Acutángulo -->
+                            <polygon points="100,30 45,145 155,145" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <text x="100" y="170" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">Acutángulo</text>
+                            <text x="100" y="190" fill="#64748b" font-size="12" text-anchor="middle">3 Ángulos Agudos (&lt;90&deg;)</text>
+
+                            <!-- 2. Rectángulo -->
+                            <polygon points="230,30 230,145 340,145" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                            <rect x="230" y="130" width="15" height="15" fill="none" stroke="#166534" stroke-width="2"/>
+                            <text x="285" y="170" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Rectángulo</text>
+                            <text x="285" y="190" fill="#64748b" font-size="12" text-anchor="middle">1 Ángulo Recto (=90&deg;)</text>
+
+                            <!-- 3. Obtusángulo -->
+                            <polygon points="410,70 380,145 530,145" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <text x="455" y="170" fill="#b45309" font-weight="bold" font-size="15" text-anchor="middle">Obtusángulo</text>
+                            <text x="455" y="190" fill="#64748b" font-size="12" text-anchor="middle">1 Ángulo Obtuso (&gt;90&deg;)</text>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 1.5px solid var(--primary-green); border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #166534; margin: 0; font-weight: bold;">
+                                💡 Recuerda: El triángulo rectángulo es súper famoso porque forma una esquina perfecta de 90&deg; (cuadradito).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Los Cuadriláteros: Grupo 1 - Los Paralelogramos -->
+                <div class="slide">
+                    <h2>3. Cuadriláteros: Los Paralelogramos</h2>
+                    <p>Son figuras de 4 lados que tienen <strong>sus lados opuestos paralelos de 2 en 2</strong> (como rieles de tren):</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="560" height="210" viewBox="0 0 560 210" style="display: block; margin: auto;">
+                            <!-- 1. Cuadrado -->
+                            <rect x="40" y="40" width="100" height="100" fill="#f0f9ff" stroke="#0284c7" stroke-width="3.5"/>
+                            <text x="90" y="165" fill="#0369a1" font-weight="bold" font-size="15" text-anchor="middle">Cuadrado</text>
+                            <text x="90" y="185" fill="#64748b" font-size="11" text-anchor="middle">4 lados iguales y 90&deg;</text>
+
+                            <!-- 2. Rectángulo -->
+                            <rect x="180" y="55" width="140" height="70" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <text x="250" y="165" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">Rectángulo</text>
+                            <text x="250" y="185" fill="#64748b" font-size="11" text-anchor="middle">Lados iguales 2 a 2</text>
+
+                            <!-- 3. Rombo -->
+                            <polygon points="430,30 480,90 430,150 380,90" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <text x="430" y="165" fill="#b45309" font-weight="bold" font-size="15" text-anchor="middle">Rombo</text>
+                            <text x="430" y="185" fill="#64748b" font-size="11" text-anchor="middle">4 lados iguales inclinados</text>
+                        </svg>
+
+                        <div style="background: #f0f9ff; border: 1.5px solid #0284c7; border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #0369a1; margin: 0; font-weight: bold;">
+                                💡 Característica clave: Si extiendes los lados opuestos de estas tres figuras hacia el infinito, ¡nunca se cruzarán!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Los Cuadriláteros: Grupo 2 - Trapecios y Trapezoides -->
+                <div class="slide">
+                    <h2>4. Cuadriláteros: Trapecios y Trapezoides</h2>
+                    <p>Son figuras de 4 lados que <strong>NO tienen todos sus lados opuestos paralelos</strong>:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="560" height="210" viewBox="0 0 560 210" style="display: block; margin: auto;">
+                            <!-- 1. Trapecio -->
+                            <polygon points="120,40 220,40 260,140 80,140" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <text x="170" y="165" fill="#b45309" font-weight="bold" font-size="16" text-anchor="middle">Trapecio</text>
+                            <text x="170" y="185" fill="#64748b" font-size="12" text-anchor="middle">Solo 2 lados paralelos (base sup. e inf.)</text>
+
+                            <!-- 2. Trapezoide -->
+                            <polygon points="360,35 470,60 440,150 330,120" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                            <text x="400" y="165" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">Trapezoide</text>
+                            <text x="400" y="185" fill="#64748b" font-size="12" text-anchor="middle">¡Ningún lado es paralelo!</text>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 1.5px solid var(--primary-orange); border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #b45309; margin: 0; font-weight: bold;">
+                                💡 Diferencia clave: El Trapecio tiene un par de bases paralelas, mientras que el Trapezoide es totalmente irregular.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Laboratorio Interactivo: Creador de Triángulos -->
+                <div class="slide">
+                    <h2>¡Laboratorio Interactivo de Triángulos!</h2>
+                    <p>Haz clic en los botones para construir y ver el comportamiento de cada tipo de triángulo:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
+                            
+                            <div style="flex: 1.1; max-width: 400px;">
+                                <svg width="360" height="200" viewBox="0 0 360 200" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                    <polygon id="sim-tri" points="180,30 80,160 280,160" fill="#f0fdf4" stroke="#22c55e" stroke-width="4"/>
+                                    <text id="lbl-tri" x="180" y="188" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Triángulo Equilátero</text>
+                                </svg>
+                            </div>
+
+                            <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                <button class="option-btn" style="border-color: #22c55e;" onclick="renderTri('equilatero')">🔺 Equilátero (3 Iguales)</button>
+                                <button class="option-btn" style="border-color: #0284c7;" onclick="renderTri('isosceles')">🔺 Isósceles (2 Iguales)</button>
+                                <button class="option-btn" style="border-color: #db6015;" onclick="renderTri('escaleno')">🔺 Escaleno (3 Diferentes)</button>
+                                <button class="option-btn" style="border-color: #8b5cf6;" onclick="renderTri('rectangulo')">📐 Rectángulo (Ángulo 90&deg;)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Identificación de Cuadriláteros</h2>
+                        <p>¿Qué nombre recibe el cuadrilátero que tiene <strong>4 lados iguales inclinados</strong> y sus lados opuestos son paralelos?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! El Rombo tiene 4 lados iguales e inclinados.', '')">A) Rombo</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'El rectángulo tiene lados iguales 2 a 2, no los 4 iguales.')">B) Rectángulo</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'El trapecio solo tiene 2 lados paralelos.')">C) Trapecio</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Clasificación de Triángulos</h2>
+                        <p>Un triángulo tiene sus <strong>3 lados de medidas completamente diferentes</strong>.</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cómo se llama este triángulo por sus lados?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! El Triángulo Escaleno tiene sus 3 lados de longitudes distintas.', '')">A) Triángulo Escaleno</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'El equilátero tiene sus 3 lados iguales.')">B) Triángulo Equilátero</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'El isósceles tiene 2 lados iguales.')">C) Triángulo Isósceles</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Propiedades de los Trapecios</h2>
+                        <p>¿Cuántos lados paralelos tiene la figura geométrica llamada <strong>Trapecio</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! El Trapecio solo tiene 2 lados paralelos (sus bases superior e inferior).', '')">A) Solo 2 lados paralelos</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'El trapezoide es el que no tiene ningún lado paralelo.')">B) Ningún lado paralelo</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Los paralelogramos son los que tienen 4 lados paralelos de 2 en 2.')">C) 4 lados paralelos</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado la clasificación de triángulos y la familia de los cuadriláteros!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 10;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function renderTri(type) {
+            const tri = document.getElementById('sim-tri');
+            const lbl = document.getElementById('lbl-tri');
+            
+            if (type === 'equilatero') {
+                tri.setAttribute('points', '180,30 80,160 280,160');
+                tri.setAttribute('fill', '#f0fdf4');
+                tri.setAttribute('stroke', '#22c55e');
+                lbl.textContent = 'Triángulo Equilátero (3 Lados Iguales)';
+                lbl.setAttribute('fill', '#166534');
+            } else if (type === 'isosceles') {
+                tri.setAttribute('points', '180,20 120,160 240,160');
+                tri.setAttribute('fill', '#f0f9ff');
+                tri.setAttribute('stroke', '#0284c7');
+                lbl.textContent = 'Triángulo Isósceles (2 Lados Iguales)';
+                lbl.setAttribute('fill', '#0369a1');
+            } else if (type === 'escaleno') {
+                tri.setAttribute('points', '120,40 60,160 310,160');
+                tri.setAttribute('fill', '#fffbeb');
+                tri.setAttribute('stroke', '#db6015');
+                lbl.textContent = 'Triángulo Escaleno (3 Lados Diferentes)';
+                lbl.setAttribute('fill', '#b45309');
+            } else if (type === 'rectangulo') {
+                tri.setAttribute('points', '80,30 80,160 280,160');
+                tri.setAttribute('fill', '#f3e8ff');
+                tri.setAttribute('stroke', '#8b5cf6');
+                lbl.textContent = 'Triángulo Rectángulo (Ángulo 90°)';
+                lbl.setAttribute('fill', '#6b21a8');
+            }
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>
